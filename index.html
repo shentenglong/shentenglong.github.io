@@ -67,7 +67,7 @@
     <article id="post-递归中的优化-爬楼梯" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" class="article-date">
-  <time datetime="2021-04-04T08:09:24.000Z" itemprop="datePublished">2021-04-04</time>
+  <time datetime="2021-04-04T11:55:57.000Z" itemprop="datePublished">2021-04-04</time>
 </a>
     
   </div>
@@ -93,12 +93,54 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">class Solution &#123;</span><br><span class="line">private static   Map&lt;Integer,Integer&gt; map&#x3D;new HashMap&lt;Integer, Integer&gt;();</span><br><span class="line"> public static int climbStairs(int n) &#123;</span><br><span class="line">        if(n&#x3D;&#x3D;0)&#123;</span><br><span class="line">            return 0;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;1)&#123;</span><br><span class="line">            return 1;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;2)&#123;</span><br><span class="line">            return 2;</span><br><span class="line">        &#125;</span><br><span class="line">        int result&#x3D;0;</span><br><span class="line"></span><br><span class="line">        for(int i&#x3D;3;i&lt;&#x3D;n;i++)&#123;</span><br><span class="line">            int result1&#x3D;0;</span><br><span class="line">            int result2&#x3D;0;</span><br><span class="line">            if(map.containsKey(i-1))&#123;</span><br><span class="line">                result1&#x3D;map.get(i-1);</span><br><span class="line">            &#125;</span><br><span class="line">            if(map.containsKey(i-2))&#123;</span><br><span class="line">                result2&#x3D;map.get(i-2);</span><br><span class="line">            &#125;</span><br><span class="line">            if(!map.containsKey(i-1))&#123;</span><br><span class="line">                result1&#x3D;climbStairs(i-1);</span><br><span class="line">                map.put(i-1,result1);</span><br><span class="line">            &#125;</span><br><span class="line">            if(!map.containsKey(i-2))&#123;</span><br><span class="line">                result2&#x3D;climbStairs(i-2);</span><br><span class="line">                map.put(i-2,result2);</span><br><span class="line">            &#125;</span><br><span class="line">            result&#x3D;result1+result2;</span><br><span class="line">        &#125;</span><br><span class="line">        return result;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>写完之后测试一下是否节约时间</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">long begin&#x3D;new Date().getTime();</span><br><span class="line">System.out.println(climbStairs(40));</span><br><span class="line">long end&#x3D;new Date().getTime();</span><br><span class="line">System.out.println(&quot;用时&quot;+(end-begin)+&quot;毫秒&quot;);</span><br></pre></td></tr></table></figure>
-<p>用第一种递归输出如下:<br>165580141<br>用时811毫秒<br>使用优化之后的输出如下:<br>165580141<br>用时2毫秒<br>效果还是很不错的，直接提交代码，leetcode那边也显示通过了。<br>            解答成功:<br>            执行耗时:1 ms,击败了100.00% 的Java用户<br>            内存消耗:35.2 MB,击败了44.77% 的Java用户</p>
+<p>用第一种递归输出如下:<br>165580141<br>用时811毫秒<br>使用优化之后的输出如下:<br>165580141<br>用时2毫秒<br>效果还是很不错的，直接提交代码，leetcode那边也显示通过了。<br>            解答成功:<br>            执行耗时:1 ms,击败了100.00% 的Java用户<br>            内存消耗:35.2 MB,击败了44.77% 的Java用户<br>提交之后又在网上继续看这方面的东西，看到了另一种优化方法，经测试所用时间远小于我上面的方法，在此也分享一下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public static int climbStairs(int n) &#123;</span><br><span class="line">      if(n&#x3D;&#x3D;0)&#123;</span><br><span class="line">           return 0;</span><br><span class="line">       &#125;</span><br><span class="line">       if(n&#x3D;&#x3D;1)&#123;</span><br><span class="line">           return 1;</span><br><span class="line">       &#125;</span><br><span class="line">       if(n&#x3D;&#x3D;2)&#123;</span><br><span class="line">           return 2;</span><br><span class="line">       &#125;</span><br><span class="line">       int start&#x3D;1;</span><br><span class="line">       int end&#x3D;2;</span><br><span class="line">       int count&#x3D;0;</span><br><span class="line">       for(int i&#x3D;3;i&lt;&#x3D;n;i++)&#123;</span><br><span class="line">           int temp&#x3D;start;</span><br><span class="line">           count&#x3D;end+start;</span><br><span class="line">           start&#x3D;end;</span><br><span class="line">           end &#x3D;start+temp;</span><br><span class="line">       &#125;</span><br><span class="line">       return count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckn5sxzfp0002g4oyhptgfra3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckn76hxi3000530oydgpw2sfu" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-算法" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/03/24/%E7%AE%97%E6%B3%95/" class="article-date">
+  <time datetime="2021-03-24T08:09:24.000Z" itemprop="datePublished">2021-03-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/24/%E7%AE%97%E6%B3%95/">初入算法：每日温度题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>由于一直听别人说到过算法，自己从网上搜也没有得到想要的答案。于是就在IDEA上安装了一个Leetcode插件，工作之余偶尔刷刷题目。说是刷题，其实也就是按照我自己的想法来写，还是没有感受到什么是算法。直到今天碰到了一道题目，让我第一次感受到算法的作用。所以特意记录一下。<br>题目如下：<br>//请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 0 来代替。<br>//<br>//<br>// 例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2<br>//, 1, 1, 0, 0]。<br>//<br>// 提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的均为华氏度，都是在 [30, 100] 范围内的整数。<br>// Related Topics 栈 哈希表<br>刚看到这个题目感觉很简单，只需要循环比较就可以得到答案，没觉得跟算法有什么关系。正当我提交完答案准备下一题的时候看到了一个不一样的解法。<br>简单来说，我的做法是从左往右进行循环，每计算一个都需要全部遍历。很浪费时间。那么假设我在计算75对应位置的输出时，知道了71对应位置的值为2，那么我就可以直接用75去跟72比较，不需要与69进行比较。这样在数组长度较长的时候可以极大的缩短代码运行的时间。<br>具体实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static int[] dailyTemperatures(int[] T) &#123;</span><br><span class="line">       int [] result&#x3D;new int[T.length];</span><br><span class="line">       for(int i&#x3D;T.length-2;i&gt;&#x3D;0;i--)&#123;</span><br><span class="line">           for(int j&#x3D;i+1;j&lt;T.length;j&#x3D;j+result[j])&#123;</span><br><span class="line">                 if(T[j]&gt;T[i])&#123;</span><br><span class="line">                     result[i]&#x3D;j-i;</span><br><span class="line">                     break;</span><br><span class="line">                 &#125;</span><br><span class="line">                 if(result[j]&#x3D;&#x3D;0)&#123;</span><br><span class="line">                     result [i]&#x3D;0;</span><br><span class="line">                     break;</span><br><span class="line">                 &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       return result;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckn76hxi1000430oy2qt3415w" class="article-share-link">Share</a>
       
       
     </footer>
@@ -111,7 +153,7 @@
     <article id="post-Mysql连接查询与简易的查询优化" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" class="article-date">
-  <time datetime="2021-03-07T10:09:24.000Z" itemprop="datePublished">2021-03-07</time>
+  <time datetime="2021-03-07T10:20:33.000Z" itemprop="datePublished">2021-03-07</time>
 </a>
     
   </div>
@@ -136,7 +178,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckn5sxzfr0003g4oyh7wicir5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckn76hxhm000030oy19w8faxn" class="article-share-link">Share</a>
       
       
     </footer>
@@ -148,8 +190,8 @@
   
     <article id="post-多线程之ThreadPoolExecutor" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2021/01/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" class="article-date">
-  <time datetime="2021-01-13T02:26:44.000Z" itemprop="datePublished">2021-01-13</time>
+    <a href="/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" class="article-date">
+  <time datetime="2021-02-13T12:26:44.000Z" itemprop="datePublished">2021-02-13</time>
 </a>
     
   </div>
@@ -160,7 +202,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/01/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/">线程池ThreadPoolExecutor的简单使用。</a>
+      <a class="article-title" href="/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/">线程池ThreadPoolExecutor的简单使用。</a>
     </h1>
   
 
@@ -170,53 +212,15 @@
       
         <p>最近因为工作需求，需要一直对txt文件进行读写操作。简单来说就是需要从一个txt文件中读取所有的链接，再对每一个链接进行独立处理。将处理的结果与该链接写入另一个txt文件中，从而筛选出有用的链接。起初因为需要处理的链接不是很多，就只用了单个线程。现在随着项目的开展，链接成倍增加。于是想着用多线程来取代之前的单线程进行读写操作。现在简单记录一下逻辑及实现过程。</p>
 <p>1.将txt中所有的链接读取出来，存储在队列当中。<br>2.每一个线程依次去队列中取链接，进行处理和写入的操作。</p>
-<p>逻辑确认之后还有两个问题，一个是队列如何选择，另一个是线程池如何选择。</p>
-<p>1.搭建一个简单的SpringBoot项目。<br>这个搭建流程网上都有，简单说一下我碰到了一个问题。<br>执行SpringbootApplication之后，出现下图所示问题:<br><img src="/images/2.1.png" alt=""><br>经过网上查找解决办法之后发现需要把启动类的@SpringBootApplication注解换成@SpringBootApplication@SpringBootApplication(exclude={DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})；<br><img src="/images/2.2.png" alt=""><br>然后再次执行启动类，访问localhost:8080就可以看到index.html了。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/01/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckn5sxzft0004g4oyahjw1d3b" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-算法" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/11/04/%E7%AE%97%E6%B3%95/" class="article-date">
-  <time datetime="2020-11-04T08:09:24.000Z" itemprop="datePublished">2020-11-04</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/04/%E7%AE%97%E6%B3%95/">初入算法：每日温度题</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>由于一直听别人说到过算法，自己从网上搜也没有得到想要的答案。于是就在IDEA上安装了一个Leetcode插件，工作之余偶尔刷刷题目。说是刷题，其实也就是按照我自己的想法来写，还是没有感受到什么是算法。直到今天碰到了一道题目，让我第一次感受到算法的作用。所以特意记录一下。<br>题目如下：<br>//请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 0 来代替。<br>//<br>//<br>// 例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2<br>//, 1, 1, 0, 0]。<br>//<br>// 提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的均为华氏度，都是在 [30, 100] 范围内的整数。<br>// Related Topics 栈 哈希表<br>刚看到这个题目感觉很简单，只需要循环比较就可以得到答案，没觉得跟算法有什么关系。正当我提交完答案准备下一题的时候看到了一个不一样的解法。<br>简单来说，我的做法是从左往右进行循环，每计算一个都需要全部遍历。很浪费时间。那么假设我在计算75对应位置的输出时，知道了71对应位置的值为2，那么我就可以直接用75去跟72比较，不需要与69进行比较。这样在数组长度较长的时候可以极大的缩短代码运行的时间。<br>具体实现如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static int[] dailyTemperatures(int[] T) &#123;</span><br><span class="line">       int [] result&#x3D;new int[T.length];</span><br><span class="line">       for(int i&#x3D;T.length-2;i&gt;&#x3D;0;i--)&#123;</span><br><span class="line">           for(int j&#x3D;i+1;j&lt;T.length;j&#x3D;j+result[j])&#123;</span><br><span class="line">                 if(T[j]&gt;T[i])&#123;</span><br><span class="line">                     result[i]&#x3D;j-i;</span><br><span class="line">                     break;</span><br><span class="line">                 &#125;</span><br><span class="line">                 if(result[j]&#x3D;&#x3D;0)&#123;</span><br><span class="line">                     result [i]&#x3D;0;</span><br><span class="line">                     break;</span><br><span class="line">                 &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       return result;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>逻辑确认之后写起来就非常简单了，具体代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">public class ReadByTextThread   &#123;</span><br><span class="line">    private static LinkedBlockingQueue&lt;String&gt; queue_str &#x3D; new LinkedBlockingQueue&lt;&gt;();</span><br><span class="line">    private static Logger logger &#x3D; LoggerFactory.getLogger(InsertSiteUrlSupply.class);</span><br><span class="line">    private static int threadSize &#x3D; 100;</span><br><span class="line">    private static ThreadPoolExecutor executorService &#x3D; (ThreadPoolExecutor) Executors.newFixedThreadPool(threadSize);</span><br><span class="line">    private static BufferedWriter bfw;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            File file1 &#x3D; new File(&quot;D:\\test\\4.txt&quot;);</span><br><span class="line">            List&lt;String&gt; list  &#x3D; FileUtils.readLines(file1, &quot;utf-8&quot;);</span><br><span class="line">            File file2 &#x3D; new File(&quot;D:\\test\\5.txt&quot;);</span><br><span class="line">            bfw &#x3D; new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file2,true)));</span><br><span class="line">            for (String str : list) &#123;</span><br><span class="line">                if (StringUtils.isNotBlank(str)) &#123;</span><br><span class="line">                    queue_str.put(str);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            logger.info(&quot;queue.size &#x3D; &#123;&#125;&quot;, queue_str.size());</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; threadSize; i++) &#123;</span><br><span class="line">            executorService.submit(new ReadByTextThread.SpiderThread_str());</span><br><span class="line">        &#125;</span><br><span class="line">        logger.info(&quot;当前运行线程数：&#123;&#125;&quot;, threadSize);</span><br><span class="line">    &#125;</span><br><span class="line">    private static class SpiderThread_str implements Runnable &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    String str &#x3D; queue_str.poll();</span><br><span class="line">                    if (StringUtils.isBlank(str)) &#123;</span><br><span class="line">                        Thread.sleep(1);</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line">                    Response response&#x3D;new ReadByTextThread().getResponse(str);</span><br><span class="line">                    if(response&#x3D;&#x3D;null)&#123;</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line">                    Document doc&#x3D; Jsoup.parse(response.getRawText());</span><br><span class="line">                    String title&#x3D;doc.select(&quot;#posthead &gt; div.title.clearfix &gt; h3&quot;).text();</span><br><span class="line">                    if(title.equals(&quot;&quot;))&#123;</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line">                    bfw.write(str+&quot;\t&quot;+title);</span><br><span class="line">                    bfw.flush();</span><br><span class="line">                    bfw.newLine();</span><br><span class="line">                    logger.info(&quot;线程名称[&#123;&#125;], 链接[&#123;&#125;],&quot;, Thread.currentThread().getName(), str);</span><br><span class="line">                    logger.info(&quot;【剩余：&#123;&#125; - &#123;&#125;】&quot;, queue_str.size(), str);</span><br><span class="line">                &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    protected Response getResponse( String url) &#123;</span><br><span class="line">        Response response&#x3D;null;</span><br><span class="line">        Random random&#x3D;new Random();</span><br><span class="line">        String sttr&#x3D;&quot;Mozilla&#x2F;5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;[ID].0.[num].190 Safari&#x2F;537.36&quot;;</span><br><span class="line">        for(int i&#x3D;0;i&lt;&#x3D;10;i++)&#123;</span><br><span class="line">            int id&#x3D;random.nextInt(100);</span><br><span class="line">            int num&#x3D;random.nextInt(5000);</span><br><span class="line">            String user_Agent&#x3D;sttr.replace(&quot;[ID]&quot;,id+&quot;&quot;).replace(&quot;[num]&quot;,num+&quot;&quot;);</span><br><span class="line">            Site site_1 &#x3D; Site.me().setUserAgent(WebpageConstant.USER_AGENT).setCharset(null)</span><br><span class="line">                    .addHeader(&quot;User-Agent&quot;,user_Agent);</span><br><span class="line">            response&#x3D;SysUtils.cycleDownloader(site_1, new Request(url), true);</span><br><span class="line">            if(response&#x3D;&#x3D;null)&#123;</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line">            else &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return response;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/11/04/%E7%AE%97%E6%B3%95/" data-id="ckn5sxzfv0005g4oy0kpb2stb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckn76hxhx000230oy9rch2r2m" class="article-share-link">Share</a>
       
       
     </footer>
@@ -228,8 +232,8 @@
   
     <article id="post-email" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/10/06/email/" class="article-date">
-  <time datetime="2020-10-06T08:55:08.000Z" itemprop="datePublished">2020-10-06</time>
+    <a href="/2020/12/06/email/" class="article-date">
+  <time datetime="2020-12-06T08:55:08.000Z" itemprop="datePublished">2020-12-06</time>
 </a>
     
   </div>
@@ -240,7 +244,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/06/email/">代码分享:发送邮件</a>
+      <a class="article-title" href="/2020/12/06/email/">代码分享:发送邮件</a>
     </h1>
   
 
@@ -258,7 +262,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/10/06/email/" data-id="ckn5sxzfc0000g4oyhwjm65zz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckn76hxhz000330oycyfs81s1" class="article-share-link">Share</a>
       
       
     </footer>
@@ -286,7 +290,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">十月 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a></li></ul>
     </div>
   </div>
 
@@ -303,19 +307,19 @@
           </li>
         
           <li>
+            <a href="/2021/03/24/%E7%AE%97%E6%B3%95/">初入算法：每日温度题</a>
+          </li>
+        
+          <li>
             <a href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
           </li>
         
           <li>
-            <a href="/2021/01/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/">线程池ThreadPoolExecutor的简单使用。</a>
+            <a href="/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/">线程池ThreadPoolExecutor的简单使用。</a>
           </li>
         
           <li>
-            <a href="/2020/11/04/%E7%AE%97%E6%B3%95/">初入算法：每日温度题</a>
-          </li>
-        
-          <li>
-            <a href="/2020/10/06/email/">代码分享:发送邮件</a>
+            <a href="/2020/12/06/email/">代码分享:发送邮件</a>
           </li>
         
       </ul>
