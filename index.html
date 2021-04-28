@@ -64,6 +64,50 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-驼峰命名的坑" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" class="article-date">
+  <time datetime="2021-04-25T09:20:52.000Z" itemprop="datePublished">2021-04-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/">驼峰命名的坑</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>近期入职了新公司,到这边的第一个任务就是参与OA系统的BUG修改，带我的师傅让我去修改页面数据丢失的问题。因为我之前没有接触过大型的OA系统项目，所以花费了很多时间在看代码的流程。此项目也是采用springboot框架，搭配easyUI与BeetlSql完成前端以及持久化层。熟悉了基本逻辑之后就开始定位问题，经过几轮DEBUG确定了问题出现的原因，对其进行了修改，测试之后也顺利通过。在此整理一下这次修改的各个环节；</p>
+<p>业务需求：客户要求页面有一个表单，他可以增加表单的字段以及修改字段的值。点击保存，之后打开就会显示他修改之后的内容。</p>
+<p>实现过程:因为表单的字段会变，所以数据无法完全依靠表单的实体类进行传输，因此需要新建一个字段表用来存储新增的字段名称及字段值，同时还要在表单实体类中新增一个Params属性，里面是一个List&lt;Map&lt;Sting,Object&gt;&gt;;</p>
+<p>操作流程:客户修改数据–&gt; 点击保存–&gt; 后端通过表单字段获取字段对应的值–&gt; 将字段与字段对应的值转换为表单实体对象 –&gt; 将字段与字段对应的值分别存入表单表和字段表 –&gt; 后端返回处理之后的表单对象 –&gt; 前端通过传回的对象与页面表单字段进行渲染；</p>
+<p>问题原因:在第四步转换实体对象，假设客户新增的字段为”main_content”,那么代码会自动进行驼峰转换把该字段变为”mainContent”,数据库中也会存为”mainContent”，这就与页面实际的字段值不符，导致这种带下划线的字段对应的数据丢失。解决方法就很简单，对字段值处理一下即可。代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;驼峰命名转换</span><br><span class="line"> public static String underline(String str) &#123;</span><br><span class="line">        Pattern pattern &#x3D; Pattern.compile(&quot;[A-Z]&quot;);</span><br><span class="line">        Matcher matcher &#x3D; pattern.matcher(str);</span><br><span class="line">        StringBuffer sb &#x3D; new StringBuffer(str);</span><br><span class="line">        if(matcher.find()) &#123;</span><br><span class="line">            sb &#x3D; new StringBuffer();</span><br><span class="line">            &#x2F;&#x2F;将当前匹配子串替换为指定字符串，并且将替换后的子串以及其之前到上次匹配子串之后的字符串段添加到一个StringBuffer对象里。</span><br><span class="line">            &#x2F;&#x2F;正则之前的字符和被替换的字符</span><br><span class="line">            matcher.appendReplacement(sb,&quot;_&quot;+matcher.group(0).toLowerCase());</span><br><span class="line">            &#x2F;&#x2F;把之后的也添加到StringBuffer对象里</span><br><span class="line">            matcher.appendTail(sb);</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">            return sb.toString();</span><br><span class="line">        &#125;</span><br><span class="line">        return underline(sb.toString());</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">	public static String camel(String str) &#123;</span><br><span class="line">        &#x2F;&#x2F;利用正则删除下划线，把下划线后一位改成大写</span><br><span class="line">        Pattern pattern &#x3D; Pattern.compile(&quot;_(\\w)&quot;);</span><br><span class="line">        Matcher matcher &#x3D; pattern.matcher(str);</span><br><span class="line">        StringBuffer sb &#x3D; new StringBuffer(str);</span><br><span class="line">        if(matcher.find()) &#123;</span><br><span class="line">            sb &#x3D; new StringBuffer();</span><br><span class="line">            &#x2F;&#x2F;将当前匹配子串替换为指定字符串，并且将替换后的子串以及其之前到上次匹配子串之后的字符串段添加到一个StringBuffer对象里。</span><br><span class="line">            &#x2F;&#x2F;正则之前的字符和被替换的字符</span><br><span class="line">            matcher.appendReplacement(sb, matcher.group(1).toUpperCase());</span><br><span class="line">            &#x2F;&#x2F;把之后的也添加到StringBuffer对象里</span><br><span class="line">            matcher.appendTail(sb);</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">            return sb.toString();</span><br><span class="line">        &#125;</span><br><span class="line">        return camel(sb.toString());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="cko18gjzi000288oy6cpmdlr9" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-递归中的优化-爬楼梯" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" class="article-date">
@@ -100,7 +144,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckn76hxi3000530oydgpw2sfu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="cko18gjzn000688oydf543deg" class="article-share-link">Share</a>
       
       
     </footer>
@@ -140,7 +184,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckn76hxi1000430oy2qt3415w" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="cko18gjzk000388oyfpuhcxrw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -178,7 +222,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckn76hxhm000030oy19w8faxn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="cko18gjzm000588oydplw3vyf" class="article-share-link">Share</a>
       
       
     </footer>
@@ -220,7 +264,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckn76hxhx000230oy9rch2r2m" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="cko18gjzl000488oy11a0hspd" class="article-share-link">Share</a>
       
       
     </footer>
@@ -262,7 +306,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckn76hxhz000330oycyfs81s1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="cko18gjz9000088oy9ktz3ldh" class="article-share-link">Share</a>
       
       
     </footer>
@@ -303,6 +347,10 @@
       <ul>
         
           <li>
+            <a href="/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/">驼峰命名的坑</a>
+          </li>
+        
+          <li>
             <a href="/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/">爬楼梯</a>
           </li>
         
@@ -316,10 +364,6 @@
         
           <li>
             <a href="/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/">线程池ThreadPoolExecutor的简单使用。</a>
-          </li>
-        
-          <li>
-            <a href="/2020/12/06/email/">代码分享:发送邮件</a>
           </li>
         
       </ul>
