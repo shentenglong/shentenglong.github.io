@@ -93,21 +93,11 @@
 <p>4.将一列值用逗号隔开成为一条数据<br>oracle:<br>select wmsys.wm_concat(it.type_name) from GM_INFO_TYPE it;<br>mysql:<br>select group_concat(it.type_name) from GM_INFO_TYPE it;</p>
 <p>5.对一个值进行重新赋值<br>oracle和mysql都是使用case when then<br> case<br>       when 条件<br>       then 条件为true,执行then后面的语句<br>       else 条件为false，执行else后面的语句<br>  end<br>如果有多个when，oracle中需要写完整的条件，而Mysql不需要，具体如下:<br>mysql:<br>case when a.type=’A’ then ‘这是A’ when ‘B’ then ‘这是B’ end typeName;<br>oracle:<br>case when a.type=’A’ then ‘这是A’ when a.type=’B’ then ‘这是B’ end typeName;<br>当然Mysql也支持同Oracle一样的写法，我个人也更偏向与Oracle的写法，比较完整。</p>
 <p>因为本人水平有限，在实际工作中也只使用过上述几个函数。如有错误，欢迎指正与修改,感谢！</p>
-<p>(SELECT ot.RES_ID<br>               FROM STF_BUSINESS_type ot<br>               START WITH ot.PARENT_ID =#businessTypeId#<br>              connect by prior ot.RES_ID = ot.PARENT_ID))</p>
-<pre><code>   ( with recursive temp 
-as( 
-select ot.* from STF_BUSINESS_type ot where ot.PARENT_ID =#businessTypeId#
-union all 
-select ot.* from STF_BUSINESS_type ot,temp t where t.RES_ID=ot.PARENT_ID
-)
-SELECT RES_ID FROM temp t))</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public void sendEmail(String email, Message mes) throws Exception &#123;</span><br><span class="line">       String from &#x3D; &quot;xxxxxxxx@qq.com&quot;;</span><br><span class="line">       String to &#x3D; email;</span><br><span class="line">       String subject &#x3D; &quot;标题&quot;;</span><br><span class="line">       String body &#x3D; &quot;内容&quot;;</span><br><span class="line">       String smtpHost &#x3D; &quot;smtp.qq.com&quot;;</span><br><span class="line">       Properties props &#x3D; new Properties();</span><br><span class="line">       props.setProperty(&quot;mail.transport.protocol&quot;, &quot;smtp&quot;); &#x2F;&#x2F; 使用的协议（JavaMail规范要求）</span><br><span class="line">       props.setProperty(&quot;mail.smtp.host&quot;, smtpHost); &#x2F;&#x2F; 发件人的邮箱的 SMTP服务器地址</span><br><span class="line">       props.setProperty(&quot;mail.smtp.auth&quot;, &quot;true&quot;); &#x2F;&#x2F; 请求认证，参数名称与具体实现有关</span><br><span class="line">       &#x2F;&#x2F; 创建Session实例对象</span><br><span class="line">       Session session &#x3D; Session.getDefaultInstance(props);</span><br><span class="line">       &#x2F;&#x2F; 创建MimeMessage实例对象</span><br><span class="line">       MimeMessage message &#x3D; new MimeMessage(session);</span><br><span class="line">       &#x2F;&#x2F; 设置发件人</span><br><span class="line">       message.setFrom(new InternetAddress(from));</span><br><span class="line">       &#x2F;&#x2F; 设置收件人</span><br><span class="line">       message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(to));</span><br><span class="line">       &#x2F;&#x2F; 设置发送日期</span><br><span class="line">       message.setSentDate(new Date());</span><br><span class="line">       &#x2F;&#x2F; 设置邮件主题</span><br><span class="line">       message.setSubject(subject);</span><br><span class="line">       &#x2F;&#x2F; 设置纯文本内容的邮件正文</span><br><span class="line">       message.setText(body);</span><br><span class="line">       &#x2F;&#x2F; 保存并生成最终的邮件内容</span><br><span class="line">       message.saveChanges();</span><br><span class="line">       &#x2F;&#x2F; 设置为debug模式, 可以查看详细的发送 log</span><br><span class="line">       session.setDebug(true);</span><br><span class="line">       &#x2F;&#x2F; 获取Transport对象</span><br><span class="line">       Transport transport &#x3D; session.getTransport(&quot;smtp&quot;);</span><br><span class="line">       &#x2F;&#x2F; 第2个参数需要填写的是QQ邮箱的SMTP的授权码</span><br><span class="line">       transport.connect(from, &quot;发件人邮箱的SMTP授权码&quot;);</span><br><span class="line">       &#x2F;&#x2F; 发送，message.getAllRecipients() 获取到的是在创建邮件对象时添加的所有收件人, 抄送人, 密送人</span><br><span class="line">       transport.sendMessage(message, message.getAllRecipients());</span><br><span class="line">       transport.close();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
-
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpnowf5l0002swoy3n0aeg92" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpnozqao0001m0oy5ion4s9x" class="article-share-link">Share</a>
       
       
     </footer>
@@ -151,7 +141,7 @@ SELECT RES_ID FROM temp t))</code></pre><figure class="highlight plain"><table><
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckpnowf5n0004swoy1bc4eyoa" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckpnozqaw0007m0oyduxlfl6i" class="article-share-link">Share</a>
       
       
     </footer>
@@ -197,7 +187,7 @@ SELECT RES_ID FROM temp t))</code></pre><figure class="highlight plain"><table><
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckpnowf5j0001swoy8atpbfze" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckpnozqav0005m0oydv18g2u2" class="article-share-link">Share</a>
       
       
     </footer>
@@ -237,7 +227,7 @@ SELECT RES_ID FROM temp t))</code></pre><figure class="highlight plain"><table><
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckpnowf5o0005swoy82xrfh1v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckpnozqaw0006m0oy0yts9ozy" class="article-share-link">Share</a>
       
       
     </footer>
@@ -275,7 +265,7 @@ SELECT RES_ID FROM temp t))</code></pre><figure class="highlight plain"><table><
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckpnowf5c0000swoy97h66ild" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckpnozqat0003m0oy99x21t5x" class="article-share-link">Share</a>
       
       
     </footer>
@@ -317,7 +307,7 @@ SELECT RES_ID FROM temp t))</code></pre><figure class="highlight plain"><table><
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckpnowf5m0003swoy33nn180j" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckpnozqau0004m0oy2n2qg2jb" class="article-share-link">Share</a>
       
       
     </footer>
@@ -359,7 +349,7 @@ SELECT RES_ID FROM temp t))</code></pre><figure class="highlight plain"><table><
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnowf5o0006swoyb3fy5q19" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnozqar0002m0oyhiu7e6v3" class="article-share-link">Share</a>
       
       
     </footer>
