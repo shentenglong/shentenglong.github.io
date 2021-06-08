@@ -64,6 +64,59 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Mysql与Oracle" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/06/06/Mysql%E4%B8%8EOracle/" class="article-date">
+  <time datetime="2021-06-06T02:27:35.000Z" itemprop="datePublished">2021-06-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/06/06/Mysql%E4%B8%8EOracle/">Mysql与Oracle常用函数</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
+<p>1.树查询也即递归查询<br>Oracle中可以直接使用START WITH …CONNECT BY<br>Mysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:<br>Oracle:<br>select o.id from view_bas_org_bizdept o start with o.id = 10000011 CONNECT BY o.id =PRIOR o.pid;<br>Mysql:<br>with recursive temp as( select a.* from view_bas_org_bizdept a where a.id = ? union all select a.* from view_bas_org_bizdept a,temp t where t.id=a.pid)SELECT id FROM temp t;<br>with recursive temp as 即创建一个 temp表。</p>
+<p>2.DATE类型转varchar<br>这个使用的最为频繁，因为业务表中几乎都会有create_time和update_tim两个字段；<br>Oracle:<br>to_char(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE；<br>mysql：<br>date_format(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;<br>其中的转换格式都可以根据自己的需求去改变。</p>
+<p>3.将多个字符串拼接在一起<br>Oracle:<br>‘,’||T.TYPE_ID||’,’;<br>mysql：<br>concat(‘,’,T.TYPE_ID,’,’);</p>
+<p>4.将一列值用逗号隔开成为一条数据<br>oracle:<br>select wmsys.wm_concat(it.type_name) from GM_INFO_TYPE it;<br>mysql:<br>select group_concat(it.type_name) from GM_INFO_TYPE it;</p>
+<p>5.对一个值进行重新赋值<br>oracle和mysql都是使用case when then<br> case<br>       when 条件<br>       then 条件为true,执行then后面的语句<br>       else 条件为false，执行else后面的语句<br>  end<br>如果有多个when，oracle中需要写完整的条件，而Mysql不需要，具体如下:<br>mysql:<br>case when a.type=’A’ then ‘这是A’ when ‘B’ then ‘这是B’ end typeName;<br>oracle:<br>case when a.type=’A’ then ‘这是A’ when a.type=’B’ then ‘这是B’ end typeName;<br>当然Mysql也支持同Oracle一样的写法，我个人也更偏向与Oracle的写法，比较完整。</p>
+<p>因为本人水平有限，在实际工作中也只使用过上述几个函数。如有错误，欢迎指正与修改,感谢！</p>
+<p>(SELECT ot.RES_ID<br>               FROM STF_BUSINESS_type ot<br>               START WITH ot.PARENT_ID =#businessTypeId#<br>              connect by prior ot.RES_ID = ot.PARENT_ID))</p>
+<pre><code>   ( with recursive temp 
+as( 
+select ot.* from STF_BUSINESS_type ot where ot.PARENT_ID =#businessTypeId#
+union all 
+select ot.* from STF_BUSINESS_type ot,temp t where t.RES_ID=ot.PARENT_ID
+)
+SELECT RES_ID FROM temp t))</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public void sendEmail(String email, Message mes) throws Exception &#123;</span><br><span class="line">       String from &#x3D; &quot;xxxxxxxx@qq.com&quot;;</span><br><span class="line">       String to &#x3D; email;</span><br><span class="line">       String subject &#x3D; &quot;标题&quot;;</span><br><span class="line">       String body &#x3D; &quot;内容&quot;;</span><br><span class="line">       String smtpHost &#x3D; &quot;smtp.qq.com&quot;;</span><br><span class="line">       Properties props &#x3D; new Properties();</span><br><span class="line">       props.setProperty(&quot;mail.transport.protocol&quot;, &quot;smtp&quot;); &#x2F;&#x2F; 使用的协议（JavaMail规范要求）</span><br><span class="line">       props.setProperty(&quot;mail.smtp.host&quot;, smtpHost); &#x2F;&#x2F; 发件人的邮箱的 SMTP服务器地址</span><br><span class="line">       props.setProperty(&quot;mail.smtp.auth&quot;, &quot;true&quot;); &#x2F;&#x2F; 请求认证，参数名称与具体实现有关</span><br><span class="line">       &#x2F;&#x2F; 创建Session实例对象</span><br><span class="line">       Session session &#x3D; Session.getDefaultInstance(props);</span><br><span class="line">       &#x2F;&#x2F; 创建MimeMessage实例对象</span><br><span class="line">       MimeMessage message &#x3D; new MimeMessage(session);</span><br><span class="line">       &#x2F;&#x2F; 设置发件人</span><br><span class="line">       message.setFrom(new InternetAddress(from));</span><br><span class="line">       &#x2F;&#x2F; 设置收件人</span><br><span class="line">       message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(to));</span><br><span class="line">       &#x2F;&#x2F; 设置发送日期</span><br><span class="line">       message.setSentDate(new Date());</span><br><span class="line">       &#x2F;&#x2F; 设置邮件主题</span><br><span class="line">       message.setSubject(subject);</span><br><span class="line">       &#x2F;&#x2F; 设置纯文本内容的邮件正文</span><br><span class="line">       message.setText(body);</span><br><span class="line">       &#x2F;&#x2F; 保存并生成最终的邮件内容</span><br><span class="line">       message.saveChanges();</span><br><span class="line">       &#x2F;&#x2F; 设置为debug模式, 可以查看详细的发送 log</span><br><span class="line">       session.setDebug(true);</span><br><span class="line">       &#x2F;&#x2F; 获取Transport对象</span><br><span class="line">       Transport transport &#x3D; session.getTransport(&quot;smtp&quot;);</span><br><span class="line">       &#x2F;&#x2F; 第2个参数需要填写的是QQ邮箱的SMTP的授权码</span><br><span class="line">       transport.connect(from, &quot;发件人邮箱的SMTP授权码&quot;);</span><br><span class="line">       &#x2F;&#x2F; 发送，message.getAllRecipients() 获取到的是在创建邮件对象时添加的所有收件人, 抄送人, 密送人</span><br><span class="line">       transport.sendMessage(message, message.getAllRecipients());</span><br><span class="line">       transport.close();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpnowf5l0002swoy3n0aeg92" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-驼峰命名的坑" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" class="article-date">
@@ -98,7 +151,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="cko18gjzi000288oy6cpmdlr9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckpnowf5n0004swoy1bc4eyoa" class="article-share-link">Share</a>
       
       
     </footer>
@@ -144,7 +197,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="cko18gjzn000688oydf543deg" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckpnowf5j0001swoy8atpbfze" class="article-share-link">Share</a>
       
       
     </footer>
@@ -184,7 +237,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="cko18gjzk000388oyfpuhcxrw" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckpnowf5o0005swoy82xrfh1v" class="article-share-link">Share</a>
       
       
     </footer>
@@ -222,7 +275,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="cko18gjzm000588oydplw3vyf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckpnowf5c0000swoy97h66ild" class="article-share-link">Share</a>
       
       
     </footer>
@@ -264,7 +317,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="cko18gjzl000488oy11a0hspd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckpnowf5m0003swoy33nn180j" class="article-share-link">Share</a>
       
       
     </footer>
@@ -306,7 +359,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="cko18gjz9000088oy9ktz3ldh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnowf5o0006swoyb3fy5q19" class="article-share-link">Share</a>
       
       
     </footer>
@@ -334,7 +387,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a></li></ul>
     </div>
   </div>
 
@@ -345,6 +398,10 @@
     <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2021/06/06/Mysql%E4%B8%8EOracle/">Mysql与Oracle常用函数</a>
+          </li>
         
           <li>
             <a href="/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/">驼峰命名的坑</a>
@@ -360,10 +417,6 @@
         
           <li>
             <a href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
-          </li>
-        
-          <li>
-            <a href="/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/">线程池ThreadPoolExecutor的简单使用。</a>
           </li>
         
       </ul>
