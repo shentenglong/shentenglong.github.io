@@ -66,10 +66,14 @@
   
     <article id="post-Mysql与Oracle" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2021/06/06/Mysql%E4%B8%8EOracle/" class="article-date">
-  <time datetime="2021-06-06T02:27:35.000Z" itemprop="datePublished">2021-06-06</time>
+    <a href="/2021/06/07/Mysql%E4%B8%8EOracle/" class="article-date">
+  <time datetime="2021-06-07T01:45:41.500Z" itemprop="datePublished">2021-06-07</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/">数据库相关</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -78,7 +82,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/06/06/Mysql%E4%B8%8EOracle/">Mysql与Oracle常用函数</a>
+      <a class="article-title" href="/2021/06/07/Mysql%E4%B8%8EOracle/">Mysql与Oracle</a>
     </h1>
   
 
@@ -86,7 +90,9 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
+        <p>title: Mysql与Oracle常用函数<br>date: 2021-06-06 10:27:35<br>tags:</p>
+<hr>
+<p>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
 <p>1.树查询也即递归查询<br>Oracle中可以直接使用START WITH …CONNECT BY<br>Mysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:<br>Oracle:<br>select o.id from view_bas_org_bizdept o start with o.id = 10000011 CONNECT BY o.id =PRIOR o.pid;<br>Mysql:<br>with recursive temp as( select a.* from view_bas_org_bizdept a where a.id = ? union all select a.* from view_bas_org_bizdept a,temp t where t.id=a.pid)SELECT id FROM temp t;<br>with recursive temp as 即创建一个 temp表。</p>
 <p>2.DATE类型转varchar<br>这个使用的最为频繁，因为业务表中几乎都会有create_time和update_tim两个字段；<br>Oracle:<br>to_char(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE；<br>mysql：<br>date_format(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;<br>其中的转换格式都可以根据自己的需求去改变。</p>
 <p>3.将多个字符串拼接在一起<br>Oracle:<br>‘,’||T.TYPE_ID||’,’;<br>mysql：<br>concat(‘,’,T.TYPE_ID,’,’);</p>
@@ -97,7 +103,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpnozqao0001m0oy5ion4s9x" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/07/Mysql%E4%B8%8EOracle/" data-id="ckpnpore70000g8oy10c56hlu" class="article-share-link">Share</a>
       
       
     </footer>
@@ -141,7 +147,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckpnozqaw0007m0oyduxlfl6i" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckpnporeq000bg8oy3i6y1gpb" class="article-share-link">Share</a>
       
       
     </footer>
@@ -187,7 +193,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckpnozqav0005m0oydv18g2u2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckpnporem0008g8oybuhyazov" class="article-share-link">Share</a>
       
       
     </footer>
@@ -227,7 +233,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckpnozqaw0006m0oy0yts9ozy" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckpnporep000ag8oy3gogg83h" class="article-share-link">Share</a>
       
       
     </footer>
@@ -239,10 +245,14 @@
   
     <article id="post-Mysql连接查询与简易的查询优化" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" class="article-date">
-  <time datetime="2021-03-07T10:20:33.000Z" itemprop="datePublished">2021-03-07</time>
+    <a href="/2021/03/04/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" class="article-date">
+  <time datetime="2021-03-04T03:11:18.949Z" itemprop="datePublished">2021-03-04</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/">数据库相关</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -251,7 +261,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
+      <a class="article-title" href="/2021/03/04/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
     </h1>
   
 
@@ -259,13 +269,15 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>我们都知道对一些数据量较大的表进行操作时肯定会涉及到数据库操作的优化，自己对这方面知识也比较匮乏，就想着趁项目表的机会重新学习梳理一下。现在项目基本结束，在此记录一下这段时间优化的方式。<br>首先看一下项目表的结构和数据量<br>  <img src="/images/sql/1.jpg" alt=""><br>  <img src="/images/sql/2.jpg" alt=""><br>总量大概在220W左右，这个量级不算很大，但是在实际使用中还是会感受到查询速度很慢，优化过程中使用了下面几种方式。<br>1.优化sql<br>关于sql的优化网上有很多种方式，就个人工作而言最实用的就是下面两种。<br>  1.1 减少select *的使用 只查询需要的字段信息。<br>  最开始表中数据很少，就习惯性的select * 去查找数据，但随着数据的增大，select * 耗费的时间越来越长，经常查询一次要几分钟的时间。但查询结果通常只有两列是我所需要的信息，后面改用这两列的列名进行查询，效率提升很明显，具体可看图演示。<br>  我们用limit 100000来作为参考对象。<br>  <img src="/images/sql/3.jpg" alt=""><br>  <img src="/images/sql/4.jpg" alt=""><br>  可以看到select * 耗时 5min18s 而SELECT domain_sec,news_url 只耗时7.4s 提升的效果还是非常明显的。<br>  1.2 使用分页查询。<br>  分页查询实际使用也是非常频繁的，包括使用一些数据库连接软件进行查询也自带limit限制，所以这种方式就不再演示。<br>2.优化数据库结构<br>  2.1 建立索引<br>  谈到数据库的优化就必然离不开索引，使用有索引的列当查询条件去查询信息的效率远高于不使用索引。演示如下:<br>  我们先看用不设置索引的字段来进行查询，还是以limit 100000来作为参考对象。<br>  <img src="/images/sql/6.jpg" alt=""><br>  再看一下使用索引字段来进行查询<br>  <img src="/images/sql/5.jpg" alt=""><br>  索引的效果也是很明显<br>  2.2 分库分表<br>  分表目前项目所采取的方式，将数据量不断增加的一个表分为多个表，这样不论是查询还是存储都非常的方便。<br>  <img src="/images/sql/7.jpg" alt=""><br>  这是分表之后的数据库，利用时间来进行分表。这种方式在一些项目中也可以同样适用。</p>
+        <p>title: Mysql连接查询与简易的查询优化<br>date: 2021-03-07 18:20:33<br>tags:</p>
+<hr>
+<p>我们都知道对一些数据量较大的表进行操作时肯定会涉及到数据库操作的优化，自己对这方面知识也比较匮乏，就想着趁项目表的机会重新学习梳理一下。现在项目基本结束，在此记录一下这段时间优化的方式。<br>首先看一下项目表的结构和数据量<br>  <img src="/images/sql/1.jpg" alt=""><br>  <img src="/images/sql/2.jpg" alt=""><br>总量大概在220W左右，这个量级不算很大，但是在实际使用中还是会感受到查询速度很慢，优化过程中使用了下面几种方式。<br>1.优化sql<br>关于sql的优化网上有很多种方式，就个人工作而言最实用的就是下面两种。<br>  1.1 减少select *的使用 只查询需要的字段信息。<br>  最开始表中数据很少，就习惯性的select * 去查找数据，但随着数据的增大，select * 耗费的时间越来越长，经常查询一次要几分钟的时间。但查询结果通常只有两列是我所需要的信息，后面改用这两列的列名进行查询，效率提升很明显，具体可看图演示。<br>  我们用limit 100000来作为参考对象。<br>  <img src="/images/sql/3.jpg" alt=""><br>  <img src="/images/sql/4.jpg" alt=""><br>  可以看到select * 耗时 5min18s 而SELECT domain_sec,news_url 只耗时7.4s 提升的效果还是非常明显的。<br>  1.2 使用分页查询。<br>  分页查询实际使用也是非常频繁的，包括使用一些数据库连接软件进行查询也自带limit限制，所以这种方式就不再演示。<br>2.优化数据库结构<br>  2.1 建立索引<br>  谈到数据库的优化就必然离不开索引，使用有索引的列当查询条件去查询信息的效率远高于不使用索引。演示如下:<br>  我们先看用不设置索引的字段来进行查询，还是以limit 100000来作为参考对象。<br>  <img src="/images/sql/6.jpg" alt=""><br>  再看一下使用索引字段来进行查询<br>  <img src="/images/sql/5.jpg" alt=""><br>  索引的效果也是很明显<br>  2.2 分库分表<br>  分表目前项目所采取的方式，将数据量不断增加的一个表分为多个表，这样不论是查询还是存储都非常的方便。<br>  <img src="/images/sql/7.jpg" alt=""><br>  这是分表之后的数据库，利用时间来进行分表。这种方式在一些项目中也可以同样适用。</p>
 <p>说完了优化，在提一下Mysql的左连接，右连接和内连接的区别，这个我觉得蛮有意思的。<br>首先建两个简单的表<br>  <img src="/images/sql/8.jpg" alt=""><br>  <img src="/images/sql/9.jpg" alt=""><br>  两个表通过student_id关联，但是有的ID只在一个表中出现。<br>  我们先看左连接查询，sql与查询结果如下<br> SELECT * FROM student st LEFT JOIN score sc  ON st.student_id=sc.student_id;<br> <img src="/images/sql/10.jpg" alt=""><br> 从结果可见 左连接的结果是由左边的student表中字段为基础显示两个表数据，score表中没有student_id为1642051124的则显示null。同理，右连接则是以右边的表为基础显示两个表的数据。最后看一下内连接。<br> SELECT * FROM student st INNER JOIN score sc  ON st.student_id=sc.student_id;<br> <img src="/images/sql/11.jpg" alt=""><br> 由此可见，内连接是以两个表共有的student_id作为基础来显示数据。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckpnozqat0003m0oy99x21t5x" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/04/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckpnporee0002g8oy01uh45zf" class="article-share-link">Share</a>
       
       
     </footer>
@@ -307,7 +319,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckpnozqau0004m0oy2n2qg2jb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckpnporel0007g8oy9td89jll" class="article-share-link">Share</a>
       
       
     </footer>
@@ -349,7 +361,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnozqar0002m0oyhiu7e6v3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnporej0005g8oy5de10f4e" class="article-share-link">Share</a>
       
       
     </footer>
@@ -366,6 +378,13 @@
           <aside id="sidebar">
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/">数据库相关</a></li></ul>
+    </div>
+  </div>
+
 
   
     
@@ -390,7 +409,7 @@
       <ul>
         
           <li>
-            <a href="/2021/06/06/Mysql%E4%B8%8EOracle/">Mysql与Oracle常用函数</a>
+            <a href="/2021/06/07/Mysql%E4%B8%8EOracle/">Mysql与Oracle</a>
           </li>
         
           <li>
@@ -406,7 +425,7 @@
           </li>
         
           <li>
-            <a href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
+            <a href="/2021/03/04/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
           </li>
         
       </ul>
