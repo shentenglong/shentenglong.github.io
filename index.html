@@ -92,7 +92,7 @@
       
         <p>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
 <p>1.树查询也即递归查询<br>Oracle中可以直接使用START WITH …CONNECT BY<br>Mysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:<br>Oracle:<br>select o.id from view_bas_org_bizdept o start with o.id = 10000011 CONNECT BY o.id =PRIOR o.pid;<br>Mysql:<br>with recursive temp as( select a.* from view_bas_org_bizdept a where a.id = ? union all select a.* from view_bas_org_bizdept a,temp t where t.id=a.pid)SELECT id FROM temp t;<br>with recursive temp as 即创建一个 temp表。</p>
-<p>2.DATE类型转varchar<br>这个使用的最为频繁，因为业务表中几乎都会有create_time和update_tim两个字段；<br>Oracle:<br>to_char(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE；<br>mysql：<br>date_format(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;<br>其中的转换格式都可以根据自己的需求去改变。</p>
+<p>2.DATE类型转varchar<br>这个使用的最为频繁，因为业务表中几乎都会有create_time和update_time两个字段；<br>Oracle:<br>to_char(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE；<br>mysql：<br>date_format(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;<br>其中的转换格式都可以根据自己的需求去改变。</p>
 <p>3.将多个字符串拼接在一起<br>Oracle:<br>‘,’||T.TYPE_ID||’,’;<br>mysql：<br>concat(‘,’,T.TYPE_ID,’,’);</p>
 <p>4.将一列值用逗号隔开成为一条数据<br>oracle:<br>select wmsys.wm_concat(it.type_name) from GM_INFO_TYPE it;<br>mysql:<br>select group_concat(it.type_name) from GM_INFO_TYPE it;</p>
 <p>5.对一个值进行重新赋值<br>oracle和mysql都是使用case when then<br> case<br>       when 条件<br>       then 条件为true,执行then后面的语句<br>       else 条件为false，执行else后面的语句<br>  end<br>如果有多个when，oracle中需要写完整的条件，而Mysql不需要，具体如下:<br>mysql:<br>case when a.type=’A’ then ‘这是A’ when ‘B’ then ‘这是B’ end typeName;<br>oracle:<br>case when a.type=’A’ then ‘这是A’ when a.type=’B’ then ‘这是B’ end typeName;<br>当然Mysql也支持同Oracle一样的写法，我个人也更偏向与Oracle的写法，比较完整。</p>
@@ -101,7 +101,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpnqxo7v0002gcoyegzn9wno" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpnrohwr000af0oyh5x93tbu" class="article-share-link">Share</a>
       
       
     </footer>
@@ -149,7 +149,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckpnqxo87000agcoycjb9e4jh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckpnrohwp0008f0oy1e555ds7" class="article-share-link">Share</a>
       
       
     </footer>
@@ -199,7 +199,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckpnqxo850009gcoy3akvb3eb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckpnrohwt000bf0oya1wi94jx" class="article-share-link">Share</a>
       
       
     </footer>
@@ -243,7 +243,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckpnqxo800005gcoy4sb40s3c" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckpnrohwf0002f0oygl0jg89l" class="article-share-link">Share</a>
       
       
     </footer>
@@ -285,7 +285,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckpnqxo7j0000gcoydlxp788v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckpnrohwk0005f0oy04e1ely7" class="article-share-link">Share</a>
       
       
     </footer>
@@ -331,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckpnqxo810006gcoy08w63164" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckpnrohwn0007f0oyblvwbn50" class="article-share-link">Share</a>
       
       
     </footer>
@@ -377,7 +377,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnqxo830007gcoy5dg6b1wk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnrohw60000f0oyam6bbjhg" class="article-share-link">Share</a>
       
       
     </footer>
