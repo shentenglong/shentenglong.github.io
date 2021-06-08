@@ -7,15 +7,15 @@
   
   <title>Mysql与Oracle常用函数 | 沈先生的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="categories:    - 数据库公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。 1.树查询也即递归查询Oracle中可以直接使用START WITH …CONNECT BYMysql中还没有支持递归查询的函数，但是可以通">
+  <meta name="description" content="公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。 1.树查询也即递归查询Oracle中可以直接使用START WITH …CONNECT BYMysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:O">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mysql与Oracle常用函数">
 <meta property="og:url" content="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/index.html">
 <meta property="og:site_name" content="沈先生的博客">
-<meta property="og:description" content="categories:    - 数据库公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。 1.树查询也即递归查询Oracle中可以直接使用START WITH …CONNECT BYMysql中还没有支持递归查询的函数，但是可以通">
+<meta property="og:description" content="公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。 1.树查询也即递归查询Oracle中可以直接使用START WITH …CONNECT BYMysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:O">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-06-06T02:27:35.000Z">
-<meta property="article:modified_time" content="2021-06-08T07:39:26.414Z">
+<meta property="article:modified_time" content="2021-06-08T07:49:53.752Z">
 <meta property="article:author" content="shen">
 <meta name="twitter:card" content="summary">
   
@@ -72,6 +72,10 @@
   <time datetime="2021-06-06T02:27:35.000Z" itemprop="datePublished">2021-06-06</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -88,7 +92,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>categories:<br>    - 数据库<br>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
+        <p>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
 <p>1.树查询也即递归查询<br>Oracle中可以直接使用START WITH …CONNECT BY<br>Mysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:<br>Oracle:<br>select o.id from view_bas_org_bizdept o start with o.id = 10000011 CONNECT BY o.id =PRIOR o.pid;<br>Mysql:<br>with recursive temp as( select a.* from view_bas_org_bizdept a where a.id = ? union all select a.* from view_bas_org_bizdept a,temp t where t.id=a.pid)SELECT id FROM temp t;<br>with recursive temp as 即创建一个 temp表。</p>
 <p>2.DATE类型转varchar<br>这个使用的最为频繁，因为业务表中几乎都会有create_time和update_tim两个字段；<br>Oracle:<br>to_char(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE；<br>mysql：<br>date_format(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;<br>其中的转换格式都可以根据自己的需求去改变。</p>
 <p>3.将多个字符串拼接在一起<br>Oracle:<br>‘,’||T.TYPE_ID||’,’;<br>mysql：<br>concat(‘,’,T.TYPE_ID,’,’);</p>
@@ -99,7 +103,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpnqqcnf000558oy83yofz3r" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpnqvxgy00008soyab8o8c8w" class="article-share-link">Share</a>
       
       
     </footer>
@@ -127,7 +131,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a></li></ul>
     </div>
   </div>
 
@@ -171,7 +175,7 @@
           </li>
         
           <li>
-            <a href="/2021/03/04/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
+            <a href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
           </li>
         
       </ul>

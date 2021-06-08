@@ -7,15 +7,15 @@
   
   <title>代码分享:发送邮件 | 沈先生的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="categories:    - 个人记录闲来无事写了一个发送邮件的代码，可以通过QQ邮箱发送邮件轰炸自己的好朋友。代码也非常简单，跟大家简单分享一下；首先，我们要获得自己邮箱（发件人邮箱）的SMTP的授权码，步骤如下： 1.打开自己的QQ邮箱设置界面，找到账户一栏。2.找到&lt;POP3&#x2F;IMAP&#x2F;SMTP&#x2F;Exchange&#x2F;CardDAV&#x2F;CalDAV服务&gt;选项,选择开启服务下的&amp;lt">
+  <meta name="description" content="闲来无事写了一个发送邮件的代码，可以通过QQ邮箱发送邮件轰炸自己的好朋友。代码也非常简单，跟大家简单分享一下；首先，我们要获得自己邮箱（发件人邮箱）的SMTP的授权码，步骤如下： 1.打开自己的QQ邮箱设置界面，找到账户一栏。2.找到&lt;POP3&#x2F;IMAP&#x2F;SMTP&#x2F;Exchange&#x2F;CardDAV&#x2F;CalDAV服务&gt;选项,选择开启服务下的&lt;POP3&#x2F;SMTP服务&gt;选项。3.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="代码分享:发送邮件">
 <meta property="og:url" content="http://yoursite.com/2020/12/06/email/index.html">
 <meta property="og:site_name" content="沈先生的博客">
-<meta property="og:description" content="categories:    - 个人记录闲来无事写了一个发送邮件的代码，可以通过QQ邮箱发送邮件轰炸自己的好朋友。代码也非常简单，跟大家简单分享一下；首先，我们要获得自己邮箱（发件人邮箱）的SMTP的授权码，步骤如下： 1.打开自己的QQ邮箱设置界面，找到账户一栏。2.找到&lt;POP3&#x2F;IMAP&#x2F;SMTP&#x2F;Exchange&#x2F;CardDAV&#x2F;CalDAV服务&gt;选项,选择开启服务下的&amp;lt">
+<meta property="og:description" content="闲来无事写了一个发送邮件的代码，可以通过QQ邮箱发送邮件轰炸自己的好朋友。代码也非常简单，跟大家简单分享一下；首先，我们要获得自己邮箱（发件人邮箱）的SMTP的授权码，步骤如下： 1.打开自己的QQ邮箱设置界面，找到账户一栏。2.找到&lt;POP3&#x2F;IMAP&#x2F;SMTP&#x2F;Exchange&#x2F;CardDAV&#x2F;CalDAV服务&gt;选项,选择开启服务下的&lt;POP3&#x2F;SMTP服务&gt;选项。3.">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-12-06T08:55:08.000Z">
-<meta property="article:modified_time" content="2021-06-08T07:38:59.201Z">
+<meta property="article:modified_time" content="2021-06-08T07:49:49.917Z">
 <meta property="article:author" content="shen">
 <meta name="twitter:card" content="summary">
   
@@ -72,6 +72,10 @@
   <time datetime="2020-12-06T08:55:08.000Z" itemprop="datePublished">2020-12-06</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -88,7 +92,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>categories:<br>    - 个人记录<br>闲来无事写了一个发送邮件的代码，可以通过QQ邮箱发送邮件轰炸自己的好朋友。代码也非常简单，跟大家简单分享一下；<br>首先，我们要获得自己邮箱（发件人邮箱）的SMTP的授权码，步骤如下：</p>
+        <p>闲来无事写了一个发送邮件的代码，可以通过QQ邮箱发送邮件轰炸自己的好朋友。代码也非常简单，跟大家简单分享一下；<br>首先，我们要获得自己邮箱（发件人邮箱）的SMTP的授权码，步骤如下：</p>
 <p>1.打开自己的QQ邮箱设置界面，找到账户一栏。<br>2.找到&lt;POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务&gt;选项,选择开启服务下的&lt;POP3/SMTP服务&gt;选项。<br>3.点击开启，然后按照要求发送短信，之后便可以获得你邮箱的SMTP授权码。</p>
 <p>拿到授权码之后就比较简单了，将代码中需要修改的内容修改一下，然后将代码放入循环中就可以不断发送邮箱进行轰炸。<br>所需JAR包：javax.mail.jar；</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public void sendEmail(String email, Message mes) throws Exception &#123;</span><br><span class="line">       String from &#x3D; &quot;xxxxxxxx@qq.com&quot;;</span><br><span class="line">       String to &#x3D; email;</span><br><span class="line">       String subject &#x3D; &quot;标题&quot;;</span><br><span class="line">       String body &#x3D; &quot;内容&quot;;</span><br><span class="line">       String smtpHost &#x3D; &quot;smtp.qq.com&quot;;</span><br><span class="line">       Properties props &#x3D; new Properties();</span><br><span class="line">       props.setProperty(&quot;mail.transport.protocol&quot;, &quot;smtp&quot;); &#x2F;&#x2F; 使用的协议（JavaMail规范要求）</span><br><span class="line">       props.setProperty(&quot;mail.smtp.host&quot;, smtpHost); &#x2F;&#x2F; 发件人的邮箱的 SMTP服务器地址</span><br><span class="line">       props.setProperty(&quot;mail.smtp.auth&quot;, &quot;true&quot;); &#x2F;&#x2F; 请求认证，参数名称与具体实现有关</span><br><span class="line">       &#x2F;&#x2F; 创建Session实例对象</span><br><span class="line">       Session session &#x3D; Session.getDefaultInstance(props);</span><br><span class="line">       &#x2F;&#x2F; 创建MimeMessage实例对象</span><br><span class="line">       MimeMessage message &#x3D; new MimeMessage(session);</span><br><span class="line">       &#x2F;&#x2F; 设置发件人</span><br><span class="line">       message.setFrom(new InternetAddress(from));</span><br><span class="line">       &#x2F;&#x2F; 设置收件人</span><br><span class="line">       message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(to));</span><br><span class="line">       &#x2F;&#x2F; 设置发送日期</span><br><span class="line">       message.setSentDate(new Date());</span><br><span class="line">       &#x2F;&#x2F; 设置邮件主题</span><br><span class="line">       message.setSubject(subject);</span><br><span class="line">       &#x2F;&#x2F; 设置纯文本内容的邮件正文</span><br><span class="line">       message.setText(body);</span><br><span class="line">       &#x2F;&#x2F; 保存并生成最终的邮件内容</span><br><span class="line">       message.saveChanges();</span><br><span class="line">       &#x2F;&#x2F; 设置为debug模式, 可以查看详细的发送 log</span><br><span class="line">       session.setDebug(true);</span><br><span class="line">       &#x2F;&#x2F; 获取Transport对象</span><br><span class="line">       Transport transport &#x3D; session.getTransport(&quot;smtp&quot;);</span><br><span class="line">       &#x2F;&#x2F; 第2个参数需要填写的是QQ邮箱的SMTP的授权码</span><br><span class="line">       transport.connect(from, &quot;发件人邮箱的SMTP授权码&quot;);</span><br><span class="line">       &#x2F;&#x2F; 发送，message.getAllRecipients() 获取到的是在创建邮件对象时添加的所有收件人, 抄送人, 密送人</span><br><span class="line">       transport.sendMessage(message, message.getAllRecipients());</span><br><span class="line">       transport.close();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
@@ -98,7 +102,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnqqcnc000358oye02ughp7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnqvxha00058soyg53x1uqi" class="article-share-link">Share</a>
       
       
     </footer>
@@ -130,7 +134,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a></li></ul>
     </div>
   </div>
 
@@ -174,7 +178,7 @@
           </li>
         
           <li>
-            <a href="/2021/03/04/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
+            <a href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
           </li>
         
       </ul>

@@ -70,6 +70,10 @@
   <time datetime="2021-06-06T02:27:35.000Z" itemprop="datePublished">2021-06-06</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -86,7 +90,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>categories:<br>    - 数据库<br>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
+        <p>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
 <p>1.树查询也即递归查询<br>Oracle中可以直接使用START WITH …CONNECT BY<br>Mysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:<br>Oracle:<br>select o.id from view_bas_org_bizdept o start with o.id = 10000011 CONNECT BY o.id =PRIOR o.pid;<br>Mysql:<br>with recursive temp as( select a.* from view_bas_org_bizdept a where a.id = ? union all select a.* from view_bas_org_bizdept a,temp t where t.id=a.pid)SELECT id FROM temp t;<br>with recursive temp as 即创建一个 temp表。</p>
 <p>2.DATE类型转varchar<br>这个使用的最为频繁，因为业务表中几乎都会有create_time和update_tim两个字段；<br>Oracle:<br>to_char(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE；<br>mysql：<br>date_format(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;<br>其中的转换格式都可以根据自己的需求去改变。</p>
 <p>3.将多个字符串拼接在一起<br>Oracle:<br>‘,’||T.TYPE_ID||’,’;<br>mysql：<br>concat(‘,’,T.TYPE_ID,’,’);</p>
@@ -97,7 +101,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpnqqcnf000558oy83yofz3r" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpnqvxgy00008soyab8o8c8w" class="article-share-link">Share</a>
       
       
     </footer>
@@ -113,6 +117,10 @@
   <time datetime="2021-04-25T09:20:52.000Z" itemprop="datePublished">2021-04-25</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -129,8 +137,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>categories:<br>    - 个人记录</p>
-<p>近期入职了新公司,到这边的第一个任务就是参与OA系统的BUG修改，带我的师傅让我去修改页面数据丢失的问题。因为我之前没有接触过大型的OA系统项目，所以花费了很多时间在看代码的流程。此项目也是采用springboot框架，搭配easyUI与BeetlSql完成前端以及持久化层。熟悉了基本逻辑之后就开始定位问题，经过几轮DEBUG确定了问题出现的原因，对其进行了修改，测试之后也顺利通过。在此整理一下这次修改的各个环节；</p>
+        <p>近期入职了新公司,到这边的第一个任务就是参与OA系统的BUG修改，带我的师傅让我去修改页面数据丢失的问题。因为我之前没有接触过大型的OA系统项目，所以花费了很多时间在看代码的流程。此项目也是采用springboot框架，搭配easyUI与BeetlSql完成前端以及持久化层。熟悉了基本逻辑之后就开始定位问题，经过几轮DEBUG确定了问题出现的原因，对其进行了修改，测试之后也顺利通过。在此整理一下这次修改的各个环节；</p>
 <p>业务需求：客户要求页面有一个表单，他可以增加表单的字段以及修改字段的值。点击保存，之后打开就会显示他修改之后的内容。</p>
 <p>实现过程:因为表单的字段会变，所以数据无法完全依靠表单的实体类进行传输，因此需要新建一个字段表用来存储新增的字段名称及字段值，同时还要在表单实体类中新增一个Params属性，里面是一个List&lt;Map&lt;Sting,Object&gt;&gt;;</p>
 <p>操作流程:客户修改数据–&gt; 点击保存–&gt; 后端通过表单字段获取字段对应的值–&gt; 将字段与字段对应的值转换为表单实体对象 –&gt; 将字段与字段对应的值分别存入表单表和字段表 –&gt; 后端返回处理之后的表单对象 –&gt; 前端通过传回的对象与页面表单字段进行渲染；</p>
@@ -142,7 +149,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckpnqqcnf000658oy06kbgbov" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckpnqvxhg00098soyg7l9f1v1" class="article-share-link">Share</a>
       
       
     </footer>
@@ -158,6 +165,10 @@
   <time datetime="2021-04-04T11:55:57.000Z" itemprop="datePublished">2021-04-04</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -174,7 +185,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>categories:<br>    - 算法<br>1、2、3、5、8、13、21、34</p>
+        <p>1、2、3、5、8、13、21、34</p>
 <p>今天刷leetcode的时候碰到了一个比较经典的问题，也就是爬楼梯。题目如下:<br>//假设你正在爬楼梯。需要 n 阶你才能到达楼顶。<br>//<br>// 每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？<br>//<br>// 注意：给定 n 是一个正整数。<br>//<br>// 示例 1：<br>//<br>// 输入： 2<br>//输出： 2<br>//解释： 有两种方法可以爬到楼顶。<br>//1.  1 阶 + 1 阶<br>//2.  2 阶<br>//<br>// 示例 2：<br>//<br>// 输入： 3<br>//输出： 3<br>//解释： 有三种方法可以爬到楼顶。<br>//1.  1 阶 + 1 阶 + 1 阶<br>//2.  1 阶 + 2 阶<br>//3.  2 阶 + 1 阶<br>第一反应就是递归，跟以前碰到的兔子问题一样。遂写出如下代码</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Solution &#123;</span><br><span class="line"> public static int climbStairs(int n) &#123;</span><br><span class="line">        if(n&#x3D;&#x3D;0)&#123;</span><br><span class="line">            return 0;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;1)&#123;</span><br><span class="line">            return 1;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;2)&#123;</span><br><span class="line">            return 2;</span><br><span class="line">        &#125;</span><br><span class="line">        for(int i&#x3D;3;i&lt;&#x3D;n;i++)&#123;</span><br><span class="line">            return climbStairs(n-1)+climbStairs(n-2);</span><br><span class="line">        &#125;</span><br><span class="line">        return 0;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>写完直接提交代码，提示<br>            运行失败:<br>            Time Limit Exceeded<br>            测试用例:45<br>            stdout:<br>从测试结果可以看出当需要爬45阶的楼梯时，就提示了超时。由此可见这种递归无法实现题目的要求。<br>随即我就想着能不能把递归给优化一下，脑海第一反应就是把每一次运算的结果放入map集合中，之后若需要该结果则直接从集合中取值。<br>例如 将我们在以10阶楼梯为条件去运行改代码，那么会计算9阶和8阶的结果，9阶会计算8阶和7阶，这样就会重复计算8阶的结果。我们就可以在第一次计算8阶结果的时候，把它存入Map集合中去。节省计算时间，实现如下:</p>
@@ -188,7 +199,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckpnqqcnh000758oyc1r2ajcw" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckpnqvxhh000a8soygkr76vvo" class="article-share-link">Share</a>
       
       
     </footer>
@@ -204,6 +215,10 @@
   <time datetime="2021-03-24T08:09:24.000Z" itemprop="datePublished">2021-03-24</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -220,7 +235,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>categories:<br>    - 算法<br>由于一直听别人说到过算法，自己从网上搜也没有得到想要的答案。于是就在IDEA上安装了一个Leetcode插件，工作之余偶尔刷刷题目。说是刷题，其实也就是按照我自己的想法来写，还是没有感受到什么是算法。直到今天碰到了一道题目，让我第一次感受到算法的作用。所以特意记录一下。<br>题目如下：<br>//请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 0 来代替。<br>//<br>//<br>// 例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2<br>//, 1, 1, 0, 0]。<br>//<br>// 提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的均为华氏度，都是在 [30, 100] 范围内的整数。<br>// Related Topics 栈 哈希表<br>刚看到这个题目感觉很简单，只需要循环比较就可以得到答案，没觉得跟算法有什么关系。正当我提交完答案准备下一题的时候看到了一个不一样的解法。<br>简单来说，我的做法是从左往右进行循环，每计算一个都需要全部遍历。很浪费时间。那么假设我在计算75对应位置的输出时，知道了71对应位置的值为2，那么我就可以直接用75去跟72比较，不需要与69进行比较。这样在数组长度较长的时候可以极大的缩短代码运行的时间。<br>具体实现如下：</p>
+        <p>由于一直听别人说到过算法，自己从网上搜也没有得到想要的答案。于是就在IDEA上安装了一个Leetcode插件，工作之余偶尔刷刷题目。说是刷题，其实也就是按照我自己的想法来写，还是没有感受到什么是算法。直到今天碰到了一道题目，让我第一次感受到算法的作用。所以特意记录一下。<br>题目如下：<br>//请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 0 来代替。<br>//<br>//<br>// 例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2<br>//, 1, 1, 0, 0]。<br>//<br>// 提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的均为华氏度，都是在 [30, 100] 范围内的整数。<br>// Related Topics 栈 哈希表<br>刚看到这个题目感觉很简单，只需要循环比较就可以得到答案，没觉得跟算法有什么关系。正当我提交完答案准备下一题的时候看到了一个不一样的解法。<br>简单来说，我的做法是从左往右进行循环，每计算一个都需要全部遍历。很浪费时间。那么假设我在计算75对应位置的输出时，知道了71对应位置的值为2，那么我就可以直接用75去跟72比较，不需要与69进行比较。这样在数组长度较长的时候可以极大的缩短代码运行的时间。<br>具体实现如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static int[] dailyTemperatures(int[] T) &#123;</span><br><span class="line">       int [] result&#x3D;new int[T.length];</span><br><span class="line">       for(int i&#x3D;T.length-2;i&gt;&#x3D;0;i--)&#123;</span><br><span class="line">           for(int j&#x3D;i+1;j&lt;T.length;j&#x3D;j+result[j])&#123;</span><br><span class="line">                 if(T[j]&gt;T[i])&#123;</span><br><span class="line">                     result[i]&#x3D;j-i;</span><br><span class="line">                     break;</span><br><span class="line">                 &#125;</span><br><span class="line">                 if(result[j]&#x3D;&#x3D;0)&#123;</span><br><span class="line">                     result [i]&#x3D;0;</span><br><span class="line">                     break;</span><br><span class="line">                 &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       return result;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
 
 
@@ -228,7 +243,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckpnqqcn9000158oygxhcb4py" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckpnqvxhc00078soy1hwz97a3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -240,8 +255,8 @@
   
     <article id="post-Mysql连接查询与简易的查询优化" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2021/03/04/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" class="article-date">
-  <time datetime="2021-03-04T03:11:18.949Z" itemprop="datePublished">2021-03-04</time>
+    <a href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" class="article-date">
+  <time datetime="2021-03-07T10:20:33.000Z" itemprop="datePublished">2021-03-07</time>
 </a>
     
   <div class="article-category">
@@ -256,7 +271,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/04/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
+      <a class="article-title" href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
     </h1>
   
 
@@ -264,15 +279,13 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>title: Mysql连接查询与简易的查询优化<br>date: 2021-03-07 18:20:33<br>tags:</p>
-<hr>
-<p>我们都知道对一些数据量较大的表进行操作时肯定会涉及到数据库操作的优化，自己对这方面知识也比较匮乏，就想着趁项目表的机会重新学习梳理一下。现在项目基本结束，在此记录一下这段时间优化的方式。<br>首先看一下项目表的结构和数据量<br>  <img src="/images/sql/1.jpg" alt=""><br>  <img src="/images/sql/2.jpg" alt=""><br>总量大概在220W左右，这个量级不算很大，但是在实际使用中还是会感受到查询速度很慢，优化过程中使用了下面几种方式。<br>1.优化sql<br>关于sql的优化网上有很多种方式，就个人工作而言最实用的就是下面两种。<br>  1.1 减少select *的使用 只查询需要的字段信息。<br>  最开始表中数据很少，就习惯性的select * 去查找数据，但随着数据的增大，select * 耗费的时间越来越长，经常查询一次要几分钟的时间。但查询结果通常只有两列是我所需要的信息，后面改用这两列的列名进行查询，效率提升很明显，具体可看图演示。<br>  我们用limit 100000来作为参考对象。<br>  <img src="/images/sql/3.jpg" alt=""><br>  <img src="/images/sql/4.jpg" alt=""><br>  可以看到select * 耗时 5min18s 而SELECT domain_sec,news_url 只耗时7.4s 提升的效果还是非常明显的。<br>  1.2 使用分页查询。<br>  分页查询实际使用也是非常频繁的，包括使用一些数据库连接软件进行查询也自带limit限制，所以这种方式就不再演示。<br>2.优化数据库结构<br>  2.1 建立索引<br>  谈到数据库的优化就必然离不开索引，使用有索引的列当查询条件去查询信息的效率远高于不使用索引。演示如下:<br>  我们先看用不设置索引的字段来进行查询，还是以limit 100000来作为参考对象。<br>  <img src="/images/sql/6.jpg" alt=""><br>  再看一下使用索引字段来进行查询<br>  <img src="/images/sql/5.jpg" alt=""><br>  索引的效果也是很明显<br>  2.2 分库分表<br>  分表目前项目所采取的方式，将数据量不断增加的一个表分为多个表，这样不论是查询还是存储都非常的方便。<br>  <img src="/images/sql/7.jpg" alt=""><br>  这是分表之后的数据库，利用时间来进行分表。这种方式在一些项目中也可以同样适用。</p>
+        <p>我们都知道对一些数据量较大的表进行操作时肯定会涉及到数据库操作的优化，自己对这方面知识也比较匮乏，就想着趁项目表的机会重新学习梳理一下。现在项目基本结束，在此记录一下这段时间优化的方式。<br>首先看一下项目表的结构和数据量<br>  <img src="/images/sql/1.jpg" alt=""><br>  <img src="/images/sql/2.jpg" alt=""><br>总量大概在220W左右，这个量级不算很大，但是在实际使用中还是会感受到查询速度很慢，优化过程中使用了下面几种方式。<br>1.优化sql<br>关于sql的优化网上有很多种方式，就个人工作而言最实用的就是下面两种。<br>  1.1 减少select *的使用 只查询需要的字段信息。<br>  最开始表中数据很少，就习惯性的select * 去查找数据，但随着数据的增大，select * 耗费的时间越来越长，经常查询一次要几分钟的时间。但查询结果通常只有两列是我所需要的信息，后面改用这两列的列名进行查询，效率提升很明显，具体可看图演示。<br>  我们用limit 100000来作为参考对象。<br>  <img src="/images/sql/3.jpg" alt=""><br>  <img src="/images/sql/4.jpg" alt=""><br>  可以看到select * 耗时 5min18s 而SELECT domain_sec,news_url 只耗时7.4s 提升的效果还是非常明显的。<br>  1.2 使用分页查询。<br>  分页查询实际使用也是非常频繁的，包括使用一些数据库连接软件进行查询也自带limit限制，所以这种方式就不再演示。<br>2.优化数据库结构<br>  2.1 建立索引<br>  谈到数据库的优化就必然离不开索引，使用有索引的列当查询条件去查询信息的效率远高于不使用索引。演示如下:<br>  我们先看用不设置索引的字段来进行查询，还是以limit 100000来作为参考对象。<br>  <img src="/images/sql/6.jpg" alt=""><br>  再看一下使用索引字段来进行查询<br>  <img src="/images/sql/5.jpg" alt=""><br>  索引的效果也是很明显<br>  2.2 分库分表<br>  分表目前项目所采取的方式，将数据量不断增加的一个表分为多个表，这样不论是查询还是存储都非常的方便。<br>  <img src="/images/sql/7.jpg" alt=""><br>  这是分表之后的数据库，利用时间来进行分表。这种方式在一些项目中也可以同样适用。</p>
 <p>说完了优化，在提一下Mysql的左连接，右连接和内连接的区别，这个我觉得蛮有意思的。<br>首先建两个简单的表<br>  <img src="/images/sql/8.jpg" alt=""><br>  <img src="/images/sql/9.jpg" alt=""><br>  两个表通过student_id关联，但是有的ID只在一个表中出现。<br>  我们先看左连接查询，sql与查询结果如下<br> SELECT * FROM student st LEFT JOIN score sc  ON st.student_id=sc.student_id;<br> <img src="/images/sql/10.jpg" alt=""><br> 从结果可见 左连接的结果是由左边的student表中字段为基础显示两个表数据，score表中没有student_id为1642051124的则显示null。同理，右连接则是以右边的表为基础显示两个表的数据。最后看一下内连接。<br> SELECT * FROM student st INNER JOIN score sc  ON st.student_id=sc.student_id;<br> <img src="/images/sql/11.jpg" alt=""><br> 由此可见，内连接是以两个表共有的student_id作为基础来显示数据。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/04/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckpnqqcn1000058oyf874f166" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckpnqvxh600028soy182gftpi" class="article-share-link">Share</a>
       
       
     </footer>
@@ -288,6 +301,10 @@
   <time datetime="2021-02-13T12:26:44.000Z" itemprop="datePublished">2021-02-13</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -304,7 +321,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>categories:<br>    - 个人记录<br>最近因为工作需求，需要一直对txt文件进行读写操作。简单来说就是需要从一个txt文件中读取所有的链接，再对每一个链接进行独立处理。将处理的结果与该链接写入另一个txt文件中，从而筛选出有用的链接。起初因为需要处理的链接不是很多，就只用了单个线程。现在随着项目的开展，链接成倍增加。于是想着用多线程来取代之前的单线程进行读写操作。现在简单记录一下逻辑及实现过程。</p>
+        <p>最近因为工作需求，需要一直对txt文件进行读写操作。简单来说就是需要从一个txt文件中读取所有的链接，再对每一个链接进行独立处理。将处理的结果与该链接写入另一个txt文件中，从而筛选出有用的链接。起初因为需要处理的链接不是很多，就只用了单个线程。现在随着项目的开展，链接成倍增加。于是想着用多线程来取代之前的单线程进行读写操作。现在简单记录一下逻辑及实现过程。</p>
 <p>1.将txt中所有的链接读取出来，存储在队列当中。<br>2.每一个线程依次去队列中取链接，进行处理和写入的操作。</p>
 <p>逻辑确认之后写起来就非常简单了，具体代码如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">public class ReadByTextThread   &#123;</span><br><span class="line">    private static LinkedBlockingQueue&lt;String&gt; queue_str &#x3D; new LinkedBlockingQueue&lt;&gt;();</span><br><span class="line">    private static Logger logger &#x3D; LoggerFactory.getLogger(InsertSiteUrlSupply.class);</span><br><span class="line">    private static int threadSize &#x3D; 100;</span><br><span class="line">    private static ThreadPoolExecutor executorService &#x3D; (ThreadPoolExecutor) Executors.newFixedThreadPool(threadSize);</span><br><span class="line">    private static BufferedWriter bfw;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            File file1 &#x3D; new File(&quot;D:\\test\\4.txt&quot;);</span><br><span class="line">            List&lt;String&gt; list  &#x3D; FileUtils.readLines(file1, &quot;utf-8&quot;);</span><br><span class="line">            File file2 &#x3D; new File(&quot;D:\\test\\5.txt&quot;);</span><br><span class="line">            bfw &#x3D; new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file2,true)));</span><br><span class="line">            for (String str : list) &#123;</span><br><span class="line">                if (StringUtils.isNotBlank(str)) &#123;</span><br><span class="line">                    queue_str.put(str);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            logger.info(&quot;queue.size &#x3D; &#123;&#125;&quot;, queue_str.size());</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; threadSize; i++) &#123;</span><br><span class="line">            executorService.submit(new ReadByTextThread.SpiderThread_str());</span><br><span class="line">        &#125;</span><br><span class="line">        logger.info(&quot;当前运行线程数：&#123;&#125;&quot;, threadSize);</span><br><span class="line">    &#125;</span><br><span class="line">    private static class SpiderThread_str implements Runnable &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    String str &#x3D; queue_str.poll();</span><br><span class="line">                    if (StringUtils.isBlank(str)) &#123;</span><br><span class="line">                        Thread.sleep(1);</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line">                    Response response&#x3D;new ReadByTextThread().getResponse(str);</span><br><span class="line">                    if(response&#x3D;&#x3D;null)&#123;</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line">                    Document doc&#x3D; Jsoup.parse(response.getRawText());</span><br><span class="line">                    String title&#x3D;doc.select(&quot;#posthead &gt; div.title.clearfix &gt; h3&quot;).text();</span><br><span class="line">                    if(title.equals(&quot;&quot;))&#123;</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line">                    bfw.write(str+&quot;\t&quot;+title);</span><br><span class="line">                    bfw.flush();</span><br><span class="line">                    bfw.newLine();</span><br><span class="line">                    logger.info(&quot;线程名称[&#123;&#125;], 链接[&#123;&#125;],&quot;, Thread.currentThread().getName(), str);</span><br><span class="line">                    logger.info(&quot;【剩余：&#123;&#125; - &#123;&#125;】&quot;, queue_str.size(), str);</span><br><span class="line">                &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    protected Response getResponse( String url) &#123;</span><br><span class="line">        Response response&#x3D;null;</span><br><span class="line">        Random random&#x3D;new Random();</span><br><span class="line">        String sttr&#x3D;&quot;Mozilla&#x2F;5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;[ID].0.[num].190 Safari&#x2F;537.36&quot;;</span><br><span class="line">        for(int i&#x3D;0;i&lt;&#x3D;10;i++)&#123;</span><br><span class="line">            int id&#x3D;random.nextInt(100);</span><br><span class="line">            int num&#x3D;random.nextInt(5000);</span><br><span class="line">            String user_Agent&#x3D;sttr.replace(&quot;[ID]&quot;,id+&quot;&quot;).replace(&quot;[num]&quot;,num+&quot;&quot;);</span><br><span class="line">            Site site_1 &#x3D; Site.me().setUserAgent(WebpageConstant.USER_AGENT).setCharset(null)</span><br><span class="line">                    .addHeader(&quot;User-Agent&quot;,user_Agent);</span><br><span class="line">            response&#x3D;SysUtils.cycleDownloader(site_1, new Request(url), true);</span><br><span class="line">            if(response&#x3D;&#x3D;null)&#123;</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line">            else &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return response;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -314,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckpnqqcnd000458oyfqah3t95" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckpnqvxhb00068soy16tq0i7z" class="article-share-link">Share</a>
       
       
     </footer>
@@ -330,6 +347,10 @@
   <time datetime="2020-12-06T08:55:08.000Z" itemprop="datePublished">2020-12-06</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -346,7 +367,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>categories:<br>    - 个人记录<br>闲来无事写了一个发送邮件的代码，可以通过QQ邮箱发送邮件轰炸自己的好朋友。代码也非常简单，跟大家简单分享一下；<br>首先，我们要获得自己邮箱（发件人邮箱）的SMTP的授权码，步骤如下：</p>
+        <p>闲来无事写了一个发送邮件的代码，可以通过QQ邮箱发送邮件轰炸自己的好朋友。代码也非常简单，跟大家简单分享一下；<br>首先，我们要获得自己邮箱（发件人邮箱）的SMTP的授权码，步骤如下：</p>
 <p>1.打开自己的QQ邮箱设置界面，找到账户一栏。<br>2.找到&lt;POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务&gt;选项,选择开启服务下的&lt;POP3/SMTP服务&gt;选项。<br>3.点击开启，然后按照要求发送短信，之后便可以获得你邮箱的SMTP授权码。</p>
 <p>拿到授权码之后就比较简单了，将代码中需要修改的内容修改一下，然后将代码放入循环中就可以不断发送邮箱进行轰炸。<br>所需JAR包：javax.mail.jar；</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public void sendEmail(String email, Message mes) throws Exception &#123;</span><br><span class="line">       String from &#x3D; &quot;xxxxxxxx@qq.com&quot;;</span><br><span class="line">       String to &#x3D; email;</span><br><span class="line">       String subject &#x3D; &quot;标题&quot;;</span><br><span class="line">       String body &#x3D; &quot;内容&quot;;</span><br><span class="line">       String smtpHost &#x3D; &quot;smtp.qq.com&quot;;</span><br><span class="line">       Properties props &#x3D; new Properties();</span><br><span class="line">       props.setProperty(&quot;mail.transport.protocol&quot;, &quot;smtp&quot;); &#x2F;&#x2F; 使用的协议（JavaMail规范要求）</span><br><span class="line">       props.setProperty(&quot;mail.smtp.host&quot;, smtpHost); &#x2F;&#x2F; 发件人的邮箱的 SMTP服务器地址</span><br><span class="line">       props.setProperty(&quot;mail.smtp.auth&quot;, &quot;true&quot;); &#x2F;&#x2F; 请求认证，参数名称与具体实现有关</span><br><span class="line">       &#x2F;&#x2F; 创建Session实例对象</span><br><span class="line">       Session session &#x3D; Session.getDefaultInstance(props);</span><br><span class="line">       &#x2F;&#x2F; 创建MimeMessage实例对象</span><br><span class="line">       MimeMessage message &#x3D; new MimeMessage(session);</span><br><span class="line">       &#x2F;&#x2F; 设置发件人</span><br><span class="line">       message.setFrom(new InternetAddress(from));</span><br><span class="line">       &#x2F;&#x2F; 设置收件人</span><br><span class="line">       message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(to));</span><br><span class="line">       &#x2F;&#x2F; 设置发送日期</span><br><span class="line">       message.setSentDate(new Date());</span><br><span class="line">       &#x2F;&#x2F; 设置邮件主题</span><br><span class="line">       message.setSubject(subject);</span><br><span class="line">       &#x2F;&#x2F; 设置纯文本内容的邮件正文</span><br><span class="line">       message.setText(body);</span><br><span class="line">       &#x2F;&#x2F; 保存并生成最终的邮件内容</span><br><span class="line">       message.saveChanges();</span><br><span class="line">       &#x2F;&#x2F; 设置为debug模式, 可以查看详细的发送 log</span><br><span class="line">       session.setDebug(true);</span><br><span class="line">       &#x2F;&#x2F; 获取Transport对象</span><br><span class="line">       Transport transport &#x3D; session.getTransport(&quot;smtp&quot;);</span><br><span class="line">       &#x2F;&#x2F; 第2个参数需要填写的是QQ邮箱的SMTP的授权码</span><br><span class="line">       transport.connect(from, &quot;发件人邮箱的SMTP授权码&quot;);</span><br><span class="line">       &#x2F;&#x2F; 发送，message.getAllRecipients() 获取到的是在创建邮件对象时添加的所有收件人, 抄送人, 密送人</span><br><span class="line">       transport.sendMessage(message, message.getAllRecipients());</span><br><span class="line">       transport.close();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
@@ -356,7 +377,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnqqcnc000358oye02ughp7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpnqvxha00058soyg53x1uqi" class="article-share-link">Share</a>
       
       
     </footer>
@@ -376,7 +397,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a></li></ul>
     </div>
   </div>
 
@@ -420,7 +441,7 @@
           </li>
         
           <li>
-            <a href="/2021/03/04/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
+            <a href="/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">Mysql连接查询与简易的查询优化</a>
           </li>
         
       </ul>
