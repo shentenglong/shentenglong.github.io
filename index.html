@@ -91,17 +91,18 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
-<p>1.树查询也即递归查询<br>Oracle中可以直接使用START WITH …CONNECT BY<br>Mysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:<br>Oracle:<br>select o.id from view_bas_org_bizdept o start with o.id = 10000011 CONNECT BY o.id =PRIOR o.pid;<br>Mysql:<br>with recursive temp as( select a.* from view_bas_org_bizdept a where a.id = ? union all select a.* from view_bas_org_bizdept a,temp t where t.id=a.pid)SELECT id FROM temp t;<br>with recursive temp as 即创建一个 temp表。</p>
-<p>2.DATE类型转varchar<br>这个使用的最为频繁，因为业务表中几乎都会有create_time和update_time两个字段；<br>Oracle:<br>to_char(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE；<br>mysql：<br>date_format(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;<br>其中的转换格式都可以根据自己的需求去改变。</p>
-<p>3.将多个字符串拼接在一起<br>Oracle:<br>‘,’||T.TYPE_ID||’,’;<br>mysql：<br>concat(‘,’,T.TYPE_ID,’,’);</p>
-<p>4.将一列值用逗号隔开成为一条数据<br>oracle:<br>select wmsys.wm_concat(it.type_name) from GM_INFO_TYPE it;<br>mysql:<br>select group_concat(it.type_name) from GM_INFO_TYPE it;</p>
-<p>5.对一个值进行重新赋值<br>oracle和mysql都是使用case when then<br> case<br>       when 条件<br>       then 条件为true,执行then后面的语句<br>       else 条件为false，执行else后面的语句<br>  end<br>如果有多个when，oracle中需要写完整的条件，而Mysql不需要，具体如下:<br>mysql:<br>case when a.type=’A’ then ‘这是A’ when ‘B’ then ‘这是B’ end typeName;<br>oracle:<br>case when a.type=’A’ then ‘这是A’ when a.type=’B’ then ‘这是B’ end typeName;<br>当然Mysql也支持同Oracle一样的写法，我个人也更偏向与Oracle的写法，比较完整。</p>
-<p>因为本人水平有限，在实际工作中也只使用过上述几个函数。如有错误，欢迎指正与修改,感谢！</p>
+<p>1.DATE类型与VARCHAR转换<br>这个使用的最为频繁，因为业务表中几乎都会有create_time和update_time两个字段；<br>oracle：<br>to_char(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE  DATE转VARCHAR<br>to_date(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE  VARCHAR转DATE<br>mysql：<br>date_format(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;  DATE转VARCHAR<br>str_to_date(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;  VARCHAR转DATE<br>其中的转换格式都可以根据自己的需求去改变。</p>
+<p>2.将多个字符串拼接在一起<br>Oracle:<br>‘,’||T.TYPE_ID||’,’;<br>mysql：<br>concat(‘,’,T.TYPE_ID,’,’);</p>
+<p>3.将一列值用逗号隔开成为一条数据<br>oracle:<br>select wmsys.wm_concat(it.type_name) from GM_INFO_TYPE it;<br>mysql:<br>select group_concat(it.type_name) from GM_INFO_TYPE it;</p>
+<p>4.对一个值进行重新赋值<br>oracle和mysql都是使用case when then<br> case<br>       when 条件<br>       then 条件为true,执行then后面的语句<br>       else 条件为false，执行else后面的语句<br>  end<br>如果有多个when，oracle中需要写完整的条件，而Mysql不需要，具体如下:<br>mysql:<br>case when a.type=’A’ then ‘这是A’ when ‘B’ then ‘这是B’ end typeName;<br>oracle:<br>case when a.type=’A’ then ‘这是A’ when a.type=’B’ then ‘这是B’ end typeName;<br>当然Mysql也支持同Oracle一样的写法，我个人也更偏向与Oracle的写法，比较完整。</p>
+<p>5.查询每列数据的序号<br>Oracle中自带ROWNUM，而Mysql则需要自己构造一下<br>oracle:<br>SELECT ROWNUM AS ID from table_name;<br>Mysql:<br>SELECT @rowno:=@rowno+1 as ID from table_name r ,(select @rowno:=0) t;</p>
+<p>6.树查询也即递归查询<br>Oracle中可以直接使用START WITH …CONNECT BY<br>Mysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:<br>Oracle:<br>select a.id from table_name as a start with a.id = 10000011 CONNECT BY a.id =PRIOR a.pid(父级ID);<br>Mysql:<br>with recursive temp as( select a.* from table_name as a where a.id = 10000011 union all select a.* from table_name as  a,temp t where t.id=a.pid)SELECT id FROM temp t;<br>with recursive temp as 即创建一个 temp表。</p>
+<p>7.树查询带深度<br>Oracle:<br>select a.id,LEVEL from table_name as a start with a.id= 10000011 CONNECT BY a.id =PRIOR a.pid(父级ID);<br>Mysql<br>with recursive temp as( select a.<em>,1 leveal from table_name as a where a.id = 10000011  union all select a.</em>,t.leveal+1 leveal from table_name as a,temp t where t.id=a.pid)SELECT t.id,t.leveal FROM temp t;</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckpns9crc0000usoygtoi3szt" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckqkm30a60000vwoy1h5p0nga" class="article-share-link">Share</a>
       
       
     </footer>
@@ -149,7 +150,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckpns9crw000ausoy5i4obsz2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckqkm30ay000avwoy7foz3v9c" class="article-share-link">Share</a>
       
       
     </footer>
@@ -199,7 +200,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckpns9crv0009usoya5ri1dab" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckqkm30am0007vwoy4m76fpgm" class="article-share-link">Share</a>
       
       
     </footer>
@@ -243,7 +244,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckpns9crp0005usoy3h9xafd0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckqkm30az000bvwoy1vjyhabu" class="article-share-link">Share</a>
       
       
     </footer>
@@ -285,7 +286,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckpns9crl0002usoy6vkf5rm4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckqkm30ag0002vwoy7maj618k" class="article-share-link">Share</a>
       
       
     </footer>
@@ -331,7 +332,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckpns9crq0006usoy5iq87o9z" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckqkm30an0008vwoy7zqw1y17" class="article-share-link">Share</a>
       
       
     </footer>
@@ -377,7 +378,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckpns9crr0007usoy1ovz24yr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckqkm30ak0005vwoy8srp059f" class="article-share-link">Share</a>
       
       
     </footer>
