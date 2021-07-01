@@ -5,17 +5,17 @@
   
 
   
-  <title>Mysql与Oracle常用函数 | </title>
+  <title>浅谈前后端分离 | </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。 1.DATE类型与VARCHAR转换这个使用的最为频繁，因为业务表中几乎都会有create_time和update_time两个字段；oracle：to_char(t.PUBLIS">
+  <meta name="description" content="&#x2F;&#x2F;请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 0 来代替。&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F; 例如，给定一个列表 temperatures &#x3D; [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2&#x2F;&#x2F;, 1, 1, 0, 0]。&#x2F;&#x2F;&#x2F;&#x2F; 提示：气温 列表长度的范围是">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mysql与Oracle常用函数">
-<meta property="og:url" content="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/index.html">
+<meta property="og:title" content="浅谈前后端分离">
+<meta property="og:url" content="http://yoursite.com/2021/07/01/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/index.html">
 <meta property="og:site_name" content="">
-<meta property="og:description" content="公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。 1.DATE类型与VARCHAR转换这个使用的最为频繁，因为业务表中几乎都会有create_time和update_time两个字段；oracle：to_char(t.PUBLIS">
+<meta property="og:description" content="&#x2F;&#x2F;请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 0 来代替。&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F; 例如，给定一个列表 temperatures &#x3D; [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2&#x2F;&#x2F;, 1, 1, 0, 0]。&#x2F;&#x2F;&#x2F;&#x2F; 提示：气温 列表长度的范围是">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-06-06T02:27:35.000Z">
-<meta property="article:modified_time" content="2021-07-01T07:53:03.445Z">
+<meta property="article:published_time" content="2021-07-01T07:56:07.000Z">
+<meta property="article:modified_time" content="2021-07-01T08:04:40.671Z">
 <meta property="article:author" content="shen">
 <meta name="twitter:card" content="summary">
   
@@ -66,14 +66,14 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-Mysql与Oracle" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-浅谈前后端分离" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2021/06/06/Mysql%E4%B8%8EOracle/" class="article-date">
-  <time datetime="2021-06-06T02:27:35.000Z" itemprop="datePublished">2021-06-06</time>
+    <a href="/2021/07/01/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" class="article-date">
+  <time datetime="2021-07-01T07:56:07.000Z" itemprop="datePublished">2021-07-01</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
   </div>
 
   </div>
@@ -84,7 +84,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Mysql与Oracle常用函数
+      浅谈前后端分离
     </h1>
   
 
@@ -92,19 +92,15 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
-<p>1.DATE类型与VARCHAR转换<br>这个使用的最为频繁，因为业务表中几乎都会有create_time和update_time两个字段；<br>oracle：<br>to_char(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE  DATE转VARCHAR<br>to_date(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE  VARCHAR转DATE<br>mysql：<br>date_format(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;  DATE转VARCHAR<br>str_to_date(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;  VARCHAR转DATE<br>其中的转换格式都可以根据自己的需求去改变。</p>
-<p>2.将多个字符串拼接在一起<br>Oracle:<br>‘,’||T.TYPE_ID||’,’;<br>mysql：<br>concat(‘,’,T.TYPE_ID,’,’);</p>
-<p>3.将一列值用逗号隔开成为一条数据<br>oracle:<br>select wmsys.wm_concat(it.type_name) from GM_INFO_TYPE it;<br>mysql:<br>select group_concat(it.type_name) from GM_INFO_TYPE it;</p>
-<p>4.对一个值进行重新赋值<br>oracle和mysql都是使用case when then<br> case<br>       when 条件<br>       then 条件为true,执行then后面的语句<br>       else 条件为false，执行else后面的语句<br>  end<br>如果有多个when，oracle中需要写完整的条件，而Mysql不需要，具体如下:<br>mysql:<br>case when a.type=’A’ then ‘这是A’ when ‘B’ then ‘这是B’ end typeName;<br>oracle:<br>case when a.type=’A’ then ‘这是A’ when a.type=’B’ then ‘这是B’ end typeName;<br>当然Mysql也支持同Oracle一样的写法，我个人也更偏向与Oracle的写法，比较完整。</p>
-<p>5.查询每列数据的序号<br>Oracle中自带ROWNUM，而Mysql则需要自己构造一下<br>oracle:<br>SELECT ROWNUM AS ID from table_name;<br>Mysql:<br>SELECT @rowno:=@rowno+1 as ID from table_name r ,(select @rowno:=0) t;</p>
-<p>6.树查询也即递归查询<br>Oracle中可以直接使用START WITH …CONNECT BY<br>Mysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:<br>Oracle:<br>select a.id from table_name as a start with a.id = 10000011 CONNECT BY a.id =PRIOR a.pid(父级ID);<br>Mysql:<br>with recursive temp as( select a.* from table_name as a where a.id = 10000011 union all select a.* from table_name as  a,temp t where t.id=a.pid)SELECT id FROM temp t;<br>with recursive temp as 即创建一个 temp表。</p>
-<p>7.树查询带深度<br>Oracle:<br>select a.id,LEVEL from table_name as a start with a.id= 10000011 CONNECT BY a.id =PRIOR a.pid(父级ID);<br>Mysql<br>with recursive temp as( select a.<em>,1 leveal from table_name as a where a.id = 10000011  union all select a.</em>,t.leveal+1 leveal from table_name as a,temp t where t.id=a.pid)SELECT t.id,t.leveal FROM temp t;</p>
+        <p>//请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 0 来代替。<br>//<br>//<br>// 例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2<br>//, 1, 1, 0, 0]。<br>//<br>// 提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的均为华氏度，都是在 [30, 100] 范围内的整数。<br>// Related Topics 栈 哈希表<br>刚看到这个题目感觉很简单，只需要循环比较就可以得到答案，没觉得跟算法有什么关系。正当我提交完答案准备下一题的时候看到了一个不一样的解法。<br>简单来说，我的做法是从左往右进行循环，每计算一个都需要全部遍历。很浪费时间。那么假设我在计算75对应位置的输出时，知道了71对应位置的值为2，那么我就可以直接用75去跟72比较，不需要与69进行比较。这样在数组长度较长的时候可以极大的缩短代码运行的时间。<br>具体实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static int[] dailyTemperatures(int[] T) &#123;</span><br><span class="line">       int [] result&#x3D;new int[T.length];</span><br><span class="line">       for(int i&#x3D;T.length-2;i&gt;&#x3D;0;i--)&#123;</span><br><span class="line">           for(int j&#x3D;i+1;j&lt;T.length;j&#x3D;j+result[j])&#123;</span><br><span class="line">                 if(T[j]&gt;T[i])&#123;</span><br><span class="line">                     result[i]&#x3D;j-i;</span><br><span class="line">                     break;</span><br><span class="line">                 &#125;</span><br><span class="line">                 if(result[j]&#x3D;&#x3D;0)&#123;</span><br><span class="line">                     result [i]&#x3D;0;</span><br><span class="line">                     break;</span><br><span class="line">                 &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       return result;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckqkmhhj40002egoy5yzf0ldv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/01/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="ckqkmhhja0007egoyfvhndcte" class="article-share-link">Share</a>
       
       
     </footer>
@@ -113,19 +109,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2021/07/01/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          浅谈前后端分离
-        
-      </div>
-    </a>
   
-  
-    <a href="/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2021/06/06/Mysql%E4%B8%8EOracle/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">驼峰命名的坑</div>
+      <div class="article-nav-title">Mysql与Oracle常用函数</div>
     </a>
   
 </nav>
