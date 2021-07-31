@@ -66,8 +66,8 @@
   
     <article id="post-浅谈前后端分离" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2021/07/01/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" class="article-date">
-  <time datetime="2021-07-01T07:56:07.000Z" itemprop="datePublished">2021-07-01</time>
+    <a href="/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" class="article-date">
+  <time datetime="2021-07-31T02:57:23.000Z" itemprop="datePublished">2021-07-31</time>
 </a>
     
   <div class="article-category">
@@ -82,7 +82,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/07/01/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/">浅谈前后端分离</a>
+      <a class="article-title" href="/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/">VUE和前后端分离</a>
     </h1>
   
 
@@ -90,15 +90,65 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>//请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 0 来代替。<br>//<br>//<br>// 例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2<br>//, 1, 1, 0, 0]。<br>//<br>// 提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的均为华氏度，都是在 [30, 100] 范围内的整数。<br>// Related Topics 栈 哈希表<br>刚看到这个题目感觉很简单，只需要循环比较就可以得到答案，没觉得跟算法有什么关系。正当我提交完答案准备下一题的时候看到了一个不一样的解法。<br>简单来说，我的做法是从左往右进行循环，每计算一个都需要全部遍历。很浪费时间。那么假设我在计算75对应位置的输出时，知道了71对应位置的值为2，那么我就可以直接用75去跟72比较，不需要与69进行比较。这样在数组长度较长的时候可以极大的缩短代码运行的时间。<br>具体实现如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static int[] dailyTemperatures(int[] T) &#123;</span><br><span class="line">       int [] result&#x3D;new int[T.length];</span><br><span class="line">       for(int i&#x3D;T.length-2;i&gt;&#x3D;0;i--)&#123;</span><br><span class="line">           for(int j&#x3D;i+1;j&lt;T.length;j&#x3D;j+result[j])&#123;</span><br><span class="line">                 if(T[j]&gt;T[i])&#123;</span><br><span class="line">                     result[i]&#x3D;j-i;</span><br><span class="line">                     break;</span><br><span class="line">                 &#125;</span><br><span class="line">                 if(result[j]&#x3D;&#x3D;0)&#123;</span><br><span class="line">                     result [i]&#x3D;0;</span><br><span class="line">                     break;</span><br><span class="line">                 &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       return result;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
-
+        <p>  六月初我被分到一个项目组，参与开发一个前后端分离的项目，因为人手不够，所以我既要写后端接口又要写前端页面。可问题在于我之前完全没有使用过VUE<br>，连基础的语法都不是很清楚。没办法只能硬着头皮上，白天啃一啃别人写好的项目，晚上回去看一看VUE的视频。就这样慢慢的也能写写页面，现在过去了一个多月,我<br>对于VUE和前后端问题也有了一点自己的想法，在此记录一下。<br>  以前我只是看过别人写好的前后端项目，对于前后端分离这个概念一直没有一个准确的理解。现在自己上手做了之后，才觉得前后端这个思想的出现是必然，前段和后端的代码<br>不可能永远放在一起，不仅影响开发的效率，也不利于后面的维护。前段和后端本质上只存在数据交互，所以为什么不把它们分开呢？前端只需要专注于页面的样式<br>和布局，数据完全可以用假数据代替，后端把接口完成之后给到前端，一个页面就完成了。在这种想法下,VUE出现了。它和springBoot的完美配合就是我对于前后端分离<br>项目的最初印象。所以接下来就聊一聊VUE；<br>   对于一个接触VUE不到两个月的人来说，VUE最让我感到神奇的地方就是它的组件。你可以在开发项目前写好多个公共组件，比如表单，详情页。这些公共组件<br>支持你在任何页面调用，就如同JAVA中封装好的方法一般，即是一种规范，也是提升效率的有效途径。其次就是它的一些指令，比如v-model，这个双向绑定解决了很多数据交互方面的问题。尤其是<br>VUE还为一些常用指令提供了缩写，非常方便！<br>  以上只是我个人对于VUE和前后端分离的简单看法，由于我对此接触较浅，如有错误，还请指正。后续随着我个人能力的提升，也会继续更新这篇文章，毕竟学习是一个长久的过程，需要不断的记录！</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/07/01/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="ckqkmhhja0007egoyfvhndcte" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="ckrrehrz200004woy607y93bt" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-VUE+springBoot项目部署" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" class="article-date">
+  <time datetime="2021-07-03T03:26:07.000Z" itemprop="datePublished">2021-07-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/">VUE+springBoot项目部署</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上周花了半天时间部署了一个前后端分离的项目，中间遇到了很多问题，于是整理了一下，在此记录。</p>
+<p>VUE部署步骤（不修改前端路径）<br>1.下载nginx，<a href="http://nginx.org/en/download.html" target="_blank" rel="noopener">http://nginx.org/en/download.html</a><br>2.在前端项目文件夹处打开CMD运行 npm run build 或 使用VSCODE打开前端项目在终端中运行npm run build 也可以直接执行build脚本<br>3.执行完成之后会生成一个dist文件夹。<br>4.将下载的nginx压缩包解压，复制到服务器上的某一个位置，如D:\guquan<br>5.打开nginx文件夹，找到html文件夹，将上面的dist文件夹放到html中，如D:\guquan\nginx-1.18.0\html<br>6.在nginx文件夹中打开conf，找到nginx.conf，这个是nginx的配置文件，先复制一份，防止修改出现问题无法恢复。<br>7.打开原生的nginx.conf,在server {}这个中修改以下内容：<br>(1) 修改listen 为你需要监听的端口号，注意不能是服务器已经在使用的端口号。<br>(2) 修改location / {}中的root为你的dists文件夹路径，默认开始路径是nginx文件夹，所以此处我们只需要填html/dist。<br>(3)在location/{}中加上index  index.html index.htm;和 try_files $uri $uri/ /index.html;这个是为了解决VUE页面刷新报404的问题。<br>(4)增加后端的请求代理，在location / {}的下面增加<br>location /api/v2/ {<br>             rewrite  ^/api/v2/(.*)$ /$1 break;<br>            proxy_pass  <a href="http://192.168.61.68:8082/" target="_blank" rel="noopener">http://192.168.61.68:8082/</a>;<br>        }<br>此处的api/v2在前端项目的vue.config.js中的proxy{}里面查看，不同的前端项目配置不同。如果proxy{}中配置了多个代理，则需要打开前端项目的login.js或api下的其他JS文件查看具体的请求格式。proxy_pass后面是后端部署的服务器以及端口号。<br>修改完成之后大概是这样的格式<br><img src="/images/vue/1.png" alt=""></p>
+<p>8.保存修改的nginx.conf文件，在nginx文件夹路径启动CMD，或者CD进入nginx文件夹路径。然后输入 start  nginx；服务就开始启动了。如果在nginx服务启动之后需要修改配置文件，那么修改完成之后在CMD中输入 nginx -s reload 就可以刷新服务，不需要重启。所以nginx启动之后的CMD窗口不要关闭。<br>9.上述步骤完成之后，在浏览器输入你前端部署的服务器加上监听的端口号。比如我前端部署在192.168.61.68这台服务器上。那么我输入192.168.61.68:8099/就可以访问前端页面了；如果这个时候无法访问页面就需要排查错误：<br>(1)输入192.168.61.68:8099/之后直接报500错误，检查root后面的dist文件夹路径是否正确。<br>(2)页面可以正常打开但是点击登录提示网络错误或找不到该资源，打开前端项目的vue.config.js，查看dev或devServe中的port是否是前面nginx.conf中监听的端口号，host是否是’0.0.0.0’,外层的publicPath是否为’/’，都检查完成之后重新启动运行 npm run build,将生成的dist覆盖之前的。再次启动nginx就可以正常访问页面了。</p>
+<p>VUE部署步骤（增加项目路径：将192.168.61.68:8099/修改为192.168.61.68:8099/ydgq/）<br>1.打开vue.config.js，做如下修改:<br>(1)设置publicPath为’/ydgq/’<br>(2)将proxy{}中的代理增加路径’/ydgq/’如:<br><img src="/images/vue/2.png" alt=""></p>
+<p>2打开http.js,找到axios的配置。<br><img src="/images/vue/3.png" alt=""></p>
+<p>修改config.url为<br>config.url = config.url.indexOf(‘v2’) &gt; -1 ? <code>/ydgq/api/${config.url}</code> : <code>/api/v1/${config.url}</code>;<br>3打开public下的index.html，加上<meta base="/ydgq/"><br><img src="/images/vue/5.png" alt=""></p>
+<p>4打开src下的router下的index.js，找到const router = new Router({，修改为:<br><img src="/images/vue/6.png" alt=""></p>
+<p>都修改完成后运行npm run build 生产dist文件夹<br>后续步骤与上述1-6一致<br>5.打开原生的nginx.conf,在server {}这个中修改以下内容：<br>(1) 修改listen 为你需要监听的端口号，注意不能是服务器已经在使用的端口号。<br>(2) 修改location / {}中的root为你的dists文件夹路径，默认开始路径是nginx文件夹，所以此处我们只需要填html/dist。<br>(3)在location/{}中加上index  index.html index.htm;和 try_files $uri $uri/ /index.html;这个是为了解决VUE页面刷新报404的问题。<br>(4)增加后端的请求代理，在location / {}的下面增加<br>location /ydgq/api/v2/ {<br>             rewrite  ^/ydgq/api/v2/(.*)$ /$1 break;<br>            proxy_pass  <a href="http://192.168.61.68:8082/" target="_blank" rel="noopener">http://192.168.61.68:8082/</a>;<br>        }<br>(3)增加/ydgq路径下的访问<br>location /ydgq {<br>             alias html/dist;<br>             index index.html index.html;<br>             try_files $uri $uri/ /ydgq/index.html;<br>             proxy_set_header Host $host;<br>            proxy_set_header X-Real-IP $remote_addr;<br>            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;<br>}<br>后面三句代码是解决外网映射之后无法访问的问题。修改完成的conf文件如下:<br><img src="/images/vue/5.png" alt=""></p>
+<p>8.保存conf文件，启动nginx服务，输入192.168.61.68:8099/ydgq/即可访问到前端页面。</p>
+<p>后端部署<br>利用Maven对springboot项目进行打包<br><img src="/images/vue/7.png" alt=""></p>
+<p>先执行clean,再执行package，随后会在target目录下生成一个.jar的文件<br><img src="/images/vue/8.png" alt=""></p>
+<p>将该文件复制到服务器上的某一个位置，比如我是放在<br><img src="/images/vue/9.png" alt=""></p>
+<p>接下来运行CMD，执行java -jar 后面加上jar包的路径和名称，比如我的是<br>java -jar D:/guquan/equity-0.0.1.jar。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" data-id="ckrrehrzc00024woyaqbm6wmb" class="article-share-link">Share</a>
       
       
     </footer>
@@ -146,7 +196,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckqkmhhj40002egoy5yzf0ldv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckrrehrzh00054woy1khwaj73" class="article-share-link">Share</a>
       
       
     </footer>
@@ -194,7 +244,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckqkmhhjg000begoyct2paeu1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckrrehrzt000e4woy1r5r1knp" class="article-share-link">Share</a>
       
       
     </footer>
@@ -244,7 +294,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckqkmhhje000aegoyaizhe8wo" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckrrehrzm00084woy5jk65vyl" class="article-share-link">Share</a>
       
       
     </footer>
@@ -288,7 +338,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckqkmhhjc0008egoyf4d45pun" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckrrehrzv000g4woy5hj92lri" class="article-share-link">Share</a>
       
       
     </footer>
@@ -330,7 +380,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckqkmhhji000eegoyc18cfnf0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckrrehrzq000a4woy0nabg63u" class="article-share-link">Share</a>
       
       
     </footer>
@@ -376,7 +426,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckqkmhhis0000egoycq55bweq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckrrehrzk00074woy52qogy8s" class="article-share-link">Share</a>
       
       
     </footer>
@@ -422,7 +472,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckqkmhhj90005egoygbugg8tc" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="ckrrehrzs000b4woy2twu73t6" class="article-share-link">Share</a>
       
       
     </footer>
@@ -470,7 +520,11 @@
       <ul>
         
           <li>
-            <a href="/2021/07/01/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/">浅谈前后端分离</a>
+            <a href="/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/">VUE和前后端分离</a>
+          </li>
+        
+          <li>
+            <a href="/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/">VUE+springBoot项目部署</a>
           </li>
         
           <li>
@@ -483,10 +537,6 @@
         
           <li>
             <a href="/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/">爬楼梯</a>
-          </li>
-        
-          <li>
-            <a href="/2021/03/24/%E7%AE%97%E6%B3%95/">初入算法：每日温度题</a>
           </li>
         
       </ul>

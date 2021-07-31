@@ -5,17 +5,17 @@
   
 
   
-  <title>Mysql与Oracle常用函数 | </title>
+  <title>VUE和前后端分离 | </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。 1.DATE类型与VARCHAR转换这个使用的最为频繁，因为业务表中几乎都会有create_time和update_time两个字段；oracle：to_char(t.PUBLIS">
+  <meta name="description" content="六月初我被分到一个项目组，参与开发一个前后端分离的项目，因为人手不够，所以我既要写后端接口又要写前端页面。可问题在于我之前完全没有使用过VUE，连基础的语法都不是很清楚。没办法只能硬着头皮上，白天啃一啃别人写好的项目，晚上回去看一看VUE的视频。就这样慢慢的也能写写页面，现在过去了一个多月,我对于VUE和前后端问题也有了一点自己的想法，在此记录一下。  以前我只是看过别人写好的前后端项目，对于">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mysql与Oracle常用函数">
-<meta property="og:url" content="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/index.html">
+<meta property="og:title" content="VUE和前后端分离">
+<meta property="og:url" content="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/index.html">
 <meta property="og:site_name" content="">
-<meta property="og:description" content="公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。 1.DATE类型与VARCHAR转换这个使用的最为频繁，因为业务表中几乎都会有create_time和update_time两个字段；oracle：to_char(t.PUBLIS">
+<meta property="og:description" content="六月初我被分到一个项目组，参与开发一个前后端分离的项目，因为人手不够，所以我既要写后端接口又要写前端页面。可问题在于我之前完全没有使用过VUE，连基础的语法都不是很清楚。没办法只能硬着头皮上，白天啃一啃别人写好的项目，晚上回去看一看VUE的视频。就这样慢慢的也能写写页面，现在过去了一个多月,我对于VUE和前后端问题也有了一点自己的想法，在此记录一下。  以前我只是看过别人写好的前后端项目，对于">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-06-06T02:27:35.000Z">
-<meta property="article:modified_time" content="2021-07-01T07:53:03.445Z">
+<meta property="article:published_time" content="2021-07-31T02:57:23.000Z">
+<meta property="article:modified_time" content="2021-07-31T06:34:50.668Z">
 <meta property="article:author" content="shen">
 <meta name="twitter:card" content="summary">
   
@@ -66,14 +66,14 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-Mysql与Oracle" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-浅谈前后端分离" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2021/06/06/Mysql%E4%B8%8EOracle/" class="article-date">
-  <time datetime="2021-06-06T02:27:35.000Z" itemprop="datePublished">2021-06-06</time>
+    <a href="/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" class="article-date">
+  <time datetime="2021-07-31T02:57:23.000Z" itemprop="datePublished">2021-07-31</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
   </div>
 
   </div>
@@ -84,7 +84,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Mysql与Oracle常用函数
+      VUE和前后端分离
     </h1>
   
 
@@ -92,19 +92,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>公司的一个项目之前是使用Oracle数据库，现在需要改为Mysql,在数据库迁移工作完成之后就需要对代码中sql语句进行修改,在修改的过程中发现Mysql跟Oracle的查询函数还是有很多相同之处的，觉得需要记录一下。</p>
-<p>1.DATE类型与VARCHAR转换<br>这个使用的最为频繁，因为业务表中几乎都会有create_time和update_time两个字段；<br>oracle：<br>to_char(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE  DATE转VARCHAR<br>to_date(t.PUBLISH_DATE,’yyyy-mm-dd’) PUBLISH_DATE  VARCHAR转DATE<br>mysql：<br>date_format(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;  DATE转VARCHAR<br>str_to_date(t.PUBLISH_DATE, ‘%Y-%m-%d’) PUBLISH_DATE;  VARCHAR转DATE<br>其中的转换格式都可以根据自己的需求去改变。</p>
-<p>2.将多个字符串拼接在一起<br>Oracle:<br>‘,’||T.TYPE_ID||’,’;<br>mysql：<br>concat(‘,’,T.TYPE_ID,’,’);</p>
-<p>3.将一列值用逗号隔开成为一条数据<br>oracle:<br>select wmsys.wm_concat(it.type_name) from GM_INFO_TYPE it;<br>mysql:<br>select group_concat(it.type_name) from GM_INFO_TYPE it;</p>
-<p>4.对一个值进行重新赋值<br>oracle和mysql都是使用case when then<br> case<br>       when 条件<br>       then 条件为true,执行then后面的语句<br>       else 条件为false，执行else后面的语句<br>  end<br>如果有多个when，oracle中需要写完整的条件，而Mysql不需要，具体如下:<br>mysql:<br>case when a.type=’A’ then ‘这是A’ when ‘B’ then ‘这是B’ end typeName;<br>oracle:<br>case when a.type=’A’ then ‘这是A’ when a.type=’B’ then ‘这是B’ end typeName;<br>当然Mysql也支持同Oracle一样的写法，我个人也更偏向与Oracle的写法，比较完整。</p>
-<p>5.查询每列数据的序号<br>Oracle中自带ROWNUM，而Mysql则需要自己构造一下<br>oracle:<br>SELECT ROWNUM AS ID from table_name;<br>Mysql:<br>SELECT @rowno:=@rowno+1 as ID from table_name r ,(select @rowno:=0) t;</p>
-<p>6.树查询也即递归查询<br>Oracle中可以直接使用START WITH …CONNECT BY<br>Mysql中还没有支持递归查询的函数，但是可以通过构造临时表进行简单的递归查询，例如:<br>Oracle:<br>select a.id from table_name as a start with a.id = 10000011 CONNECT BY a.id =PRIOR a.pid(父级ID);<br>Mysql:<br>with recursive temp as( select a.* from table_name as a where a.id = 10000011 union all select a.* from table_name as  a,temp t where t.id=a.pid)SELECT id FROM temp t;<br>with recursive temp as 即创建一个 temp表。</p>
-<p>7.树查询带深度<br>Oracle:<br>select a.id,LEVEL from table_name as a start with a.id= 10000011 CONNECT BY a.id =PRIOR a.pid(父级ID);<br>Mysql<br>with recursive temp as( select a.<em>,1 leveal from table_name as a where a.id = 10000011  union all select a.</em>,t.leveal+1 leveal from table_name as a,temp t where t.id=a.pid)SELECT t.id,t.leveal FROM temp t;</p>
+        <p>  六月初我被分到一个项目组，参与开发一个前后端分离的项目，因为人手不够，所以我既要写后端接口又要写前端页面。可问题在于我之前完全没有使用过VUE<br>，连基础的语法都不是很清楚。没办法只能硬着头皮上，白天啃一啃别人写好的项目，晚上回去看一看VUE的视频。就这样慢慢的也能写写页面，现在过去了一个多月,我<br>对于VUE和前后端问题也有了一点自己的想法，在此记录一下。<br>  以前我只是看过别人写好的前后端项目，对于前后端分离这个概念一直没有一个准确的理解。现在自己上手做了之后，才觉得前后端这个思想的出现是必然，前段和后端的代码<br>不可能永远放在一起，不仅影响开发的效率，也不利于后面的维护。前段和后端本质上只存在数据交互，所以为什么不把它们分开呢？前端只需要专注于页面的样式<br>和布局，数据完全可以用假数据代替，后端把接口完成之后给到前端，一个页面就完成了。在这种想法下,VUE出现了。它和springBoot的完美配合就是我对于前后端分离<br>项目的最初印象。所以接下来就聊一聊VUE；<br>   对于一个接触VUE不到两个月的人来说，VUE最让我感到神奇的地方就是它的组件。你可以在开发项目前写好多个公共组件，比如表单，详情页。这些公共组件<br>支持你在任何页面调用，就如同JAVA中封装好的方法一般，即是一种规范，也是提升效率的有效途径。其次就是它的一些指令，比如v-model，这个双向绑定解决了很多数据交互方面的问题。尤其是<br>VUE还为一些常用指令提供了缩写，非常方便！<br>  以上只是我个人对于VUE和前后端分离的简单看法，由于我对此接触较浅，如有错误，还请指正。后续随着我个人能力的提升，也会继续更新这篇文章，毕竟学习是一个长久的过程，需要不断的记录！</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckrrehrzh00054woy1khwaj73" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="ckrrehrz200004woy607y93bt" class="article-share-link">Share</a>
       
       
     </footer>
@@ -113,19 +106,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          VUE+springBoot项目部署
-        
-      </div>
-    </a>
   
-  
-    <a href="/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">驼峰命名的坑</div>
+      <div class="article-nav-title">VUE+springBoot项目部署</div>
     </a>
   
 </nav>
