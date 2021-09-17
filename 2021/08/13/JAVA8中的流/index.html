@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>JAVA8中流的几种常用方式 | </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="12List&lt;MenuTreeVo&gt; result&#x3D;new ArrayList&lt;MenuTreeVo&gt;()List&lt;SysMenuEntity&gt; list&#x3D;new ArrayList&lt;SysMenuEntity&gt;() 1.过滤对实体对象的某个字段进行过滤 1result.stream().filter(x -&gt; Consta">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA8中流的几种常用方式">
+<meta property="og:url" content="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/index.html">
+<meta property="og:site_name" content="">
+<meta property="og:description" content="12List&lt;MenuTreeVo&gt; result&#x3D;new ArrayList&lt;MenuTreeVo&gt;()List&lt;SysMenuEntity&gt; list&#x3D;new ArrayList&lt;SysMenuEntity&gt;() 1.过滤对实体对象的某个字段进行过滤 1result.stream().filter(x -&gt; Consta">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-13T07:22:38.000Z">
+<meta property="article:modified_time" content="2021-09-17T07:48:06.483Z">
+<meta property="article:author" content="shen">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo"></a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-JAVA8中的流" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" class="article-date">
+  <time datetime="2021-08-13T07:22:38.000Z" itemprop="datePublished">2021-08-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      JAVA8中流的几种常用方式
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;MenuTreeVo&gt; result&#x3D;new ArrayList&lt;MenuTreeVo&gt;()</span><br><span class="line">List&lt;SysMenuEntity&gt; list&#x3D;new ArrayList&lt;SysMenuEntity&gt;()</span><br></pre></td></tr></table></figure>
+<p>1.过滤<br>对实体对象的某个字段进行过滤</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result.stream().filter(x -&gt; Constant.MENU_ROOT_CODE.equals(x.getPMenuCode())) &#x2F;&#x2F;过滤result中所有pMenuCode字段为指定值</span><br></pre></td></tr></table></figure>
+
+<p>2.类型转换<br>将list<sysMenuEntity> 转换为list<MenuTreeVo></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;MenuTreeVo&gt; menuTreeVoList &#x3D; list.stream().map(this::wrap).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;当前类需实现Wrap&lt;MenuTreeVo, SysMenuEntity&gt;类，重写wrap方法</span><br><span class="line">@Override</span><br><span class="line">    public MenuTreeVo wrap(SysMenuEntity sysMenuEntity) &#123;</span><br><span class="line">        MenuTreeVo tree &#x3D; new MenuTreeVo();</span><br><span class="line">        BeanUtil.copyProperties(sysMenuEntity, tree);</span><br><span class="line">        return tree;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.排序<br>之前的排序方法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result.sort((a,b) -&gt;Long.compare(a.getOrdBy(),b.getOrdBy()); &#x2F;&#x2F;通过OrdBy字段进行从小到大的排序 </span><br><span class="line">result.sort((a,b) -&gt;Long.compare(b.getOrdBy(),a.getOrdBy()); &#x2F;&#x2F;通过OrdBy字段进行从大到小的排序</span><br></pre></td></tr></table></figure>
+<p>JAVA8流提供<br>方法一</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result.stream().sorted(Comparator.comparing(MenuTreeVo::getOrdBy));				&#x2F;&#x2F;通过OrdBy字段进行从小到大的排序</span><br><span class="line">result.stream().sorted(Comparator.comparing(MenuTreeVo::getOrdBy).reversed());	&#x2F;&#x2F;通过OrdBy字段进行从大到小的排序</span><br></pre></td></tr></table></figure>
+<p>方法二</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;MenuTreeVo实体类实现Comparable&lt;MenuTreeVo&gt;,重写compareTo方法</span><br><span class="line">@Override</span><br><span class="line">    public int compareTo(MenuTreeVo o) &#123;</span><br><span class="line">        return this.ordBy.compareTo(o.getOrdBy());</span><br><span class="line">    &#125;</span><br><span class="line">&#x2F;&#x2F;然后在需要使用时直接调用 </span><br><span class="line">result.stream().sorted();							&#x2F;&#x2F;通过OrdBy字段进行从小到大的排序</span><br><span class="line">result.stream().sorted(Comparator.reverseOrder());	&#x2F;&#x2F;通过OrdBy字段进行从大到小的排序</span><br></pre></td></tr></table></figure>
+<p>不同点:<br>第一种无需接收，执行完之后，result集合里面的对象就已经改变了顺序。<br>方法一和方法二需要接收，完整写法为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result &#x3D; result.stream().sorted(Comparator.comparing(MenuTreeVo::getOrdBy)).collect(Collectors.toList());</span><br><span class="line">result &#x3D; result.stream().sorted().collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+
+<p>相同点：<br>若集合中存在ordBy字段为NULL值的元素则会抛出空指针异常，具体处理方式如下<br>第一种更改为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result.sort((a,b) -&gt;Long.compare(a.getOrdBy()&#x3D;&#x3D;null?0L:a.getOrdBy(),b.getOrdBy()&#x3D;&#x3D;null?0L:b.getOrdBy());</span><br></pre></td></tr></table></figure>
+<p>第二种<br>方法一利用前面说的类型转换，更改为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">result &#x3D; result.stream().map(this::warp).sorted(Comparator.comparing(MsgModel::getMsgLevel)).collect(Collectors.toList());</span><br><span class="line">public  MsgModel warp(MsgModel msgModel)&#123;</span><br><span class="line">        if (StringUtils.isEmpty(msgModel.getMsgLevel()))&#123;</span><br><span class="line">            msgModel.setMsgLevel(0L);</span><br><span class="line">        &#125;</span><br><span class="line">        return msgModel;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>方法二更改一下重写的compareTo()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public int compareTo(MsgModel o) &#123;</span><br><span class="line">        Long param&#x3D; this.msgLevel&#x3D;&#x3D;null?0L:this.msgLevel;</span><br><span class="line">        return param.compareTo(o.msgLevel&#x3D;&#x3D;null?0L:o.msgLevel);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" data-id="ckto29yjj000038oye799d6wz" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          记一次需求的实现
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">VUE和前后端分离</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/">记一次需求的实现</a>
+          </li>
+        
+          <li>
+            <a href="/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/">JAVA8中流的几种常用方式</a>
+          </li>
+        
+          <li>
+            <a href="/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/">VUE和前后端分离</a>
+          </li>
+        
+          <li>
+            <a href="/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/">VUE+springBoot项目部署</a>
+          </li>
+        
+          <li>
+            <a href="/2021/06/06/Mysql%E4%B8%8EOracle/">Mysql与Oracle常用函数</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 shen<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

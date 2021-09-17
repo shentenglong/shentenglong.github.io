@@ -107,7 +107,68 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-id="cktjr1vz9000eysoy53ujbxd4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-id="ckto29yk3000b38oycfk083av" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-JAVA8中的流" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" class="article-date">
+  <time datetime="2021-08-13T07:22:38.000Z" itemprop="datePublished">2021-08-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/">JAVA8中流的几种常用方式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;MenuTreeVo&gt; result&#x3D;new ArrayList&lt;MenuTreeVo&gt;()</span><br><span class="line">List&lt;SysMenuEntity&gt; list&#x3D;new ArrayList&lt;SysMenuEntity&gt;()</span><br></pre></td></tr></table></figure>
+<p>1.过滤<br>对实体对象的某个字段进行过滤</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result.stream().filter(x -&gt; Constant.MENU_ROOT_CODE.equals(x.getPMenuCode())) &#x2F;&#x2F;过滤result中所有pMenuCode字段为指定值</span><br></pre></td></tr></table></figure>
+
+<p>2.类型转换<br>将list<sysMenuEntity> 转换为list<MenuTreeVo></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;MenuTreeVo&gt; menuTreeVoList &#x3D; list.stream().map(this::wrap).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;当前类需实现Wrap&lt;MenuTreeVo, SysMenuEntity&gt;类，重写wrap方法</span><br><span class="line">@Override</span><br><span class="line">    public MenuTreeVo wrap(SysMenuEntity sysMenuEntity) &#123;</span><br><span class="line">        MenuTreeVo tree &#x3D; new MenuTreeVo();</span><br><span class="line">        BeanUtil.copyProperties(sysMenuEntity, tree);</span><br><span class="line">        return tree;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.排序<br>之前的排序方法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result.sort((a,b) -&gt;Long.compare(a.getOrdBy(),b.getOrdBy()); &#x2F;&#x2F;通过OrdBy字段进行从小到大的排序 </span><br><span class="line">result.sort((a,b) -&gt;Long.compare(b.getOrdBy(),a.getOrdBy()); &#x2F;&#x2F;通过OrdBy字段进行从大到小的排序</span><br></pre></td></tr></table></figure>
+<p>JAVA8流提供<br>方法一</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result.stream().sorted(Comparator.comparing(MenuTreeVo::getOrdBy));				&#x2F;&#x2F;通过OrdBy字段进行从小到大的排序</span><br><span class="line">result.stream().sorted(Comparator.comparing(MenuTreeVo::getOrdBy).reversed());	&#x2F;&#x2F;通过OrdBy字段进行从大到小的排序</span><br></pre></td></tr></table></figure>
+<p>方法二</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;MenuTreeVo实体类实现Comparable&lt;MenuTreeVo&gt;,重写compareTo方法</span><br><span class="line">@Override</span><br><span class="line">    public int compareTo(MenuTreeVo o) &#123;</span><br><span class="line">        return this.ordBy.compareTo(o.getOrdBy());</span><br><span class="line">    &#125;</span><br><span class="line">&#x2F;&#x2F;然后在需要使用时直接调用 </span><br><span class="line">result.stream().sorted();							&#x2F;&#x2F;通过OrdBy字段进行从小到大的排序</span><br><span class="line">result.stream().sorted(Comparator.reverseOrder());	&#x2F;&#x2F;通过OrdBy字段进行从大到小的排序</span><br></pre></td></tr></table></figure>
+<p>不同点:<br>第一种无需接收，执行完之后，result集合里面的对象就已经改变了顺序。<br>方法一和方法二需要接收，完整写法为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result &#x3D; result.stream().sorted(Comparator.comparing(MenuTreeVo::getOrdBy)).collect(Collectors.toList());</span><br><span class="line">result &#x3D; result.stream().sorted().collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+
+<p>相同点：<br>若集合中存在ordBy字段为NULL值的元素则会抛出空指针异常，具体处理方式如下<br>第一种更改为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result.sort((a,b) -&gt;Long.compare(a.getOrdBy()&#x3D;&#x3D;null?0L:a.getOrdBy(),b.getOrdBy()&#x3D;&#x3D;null?0L:b.getOrdBy());</span><br></pre></td></tr></table></figure>
+<p>第二种<br>方法一利用前面说的类型转换，更改为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">result &#x3D; result.stream().map(this::warp).sorted(Comparator.comparing(MsgModel::getMsgLevel)).collect(Collectors.toList());</span><br><span class="line">public  MsgModel warp(MsgModel msgModel)&#123;</span><br><span class="line">        if (StringUtils.isEmpty(msgModel.getMsgLevel()))&#123;</span><br><span class="line">            msgModel.setMsgLevel(0L);</span><br><span class="line">        &#125;</span><br><span class="line">        return msgModel;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>方法二更改一下重写的compareTo()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public int compareTo(MsgModel o) &#123;</span><br><span class="line">        Long param&#x3D; this.msgLevel&#x3D;&#x3D;null?0L:this.msgLevel;</span><br><span class="line">        return param.compareTo(o.msgLevel&#x3D;&#x3D;null?0L:o.msgLevel);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" data-id="ckto29yjj000038oye799d6wz" class="article-share-link">Share</a>
       
       
     </footer>
@@ -151,7 +212,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="cktjr1vz20007ysoy8iqmca3q" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="ckto29yjw000438oy69h68vd6" class="article-share-link">Share</a>
       
       
     </footer>
@@ -204,7 +265,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" data-id="cktjr1vz8000dysoyb5cphw5e" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" data-id="ckto29yk4000d38oy0lyweo7m" class="article-share-link">Share</a>
       
       
     </footer>
@@ -252,7 +313,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="cktjr1vyh0002ysoy3trueud6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckto29yjv000338oy9d1ed4gt" class="article-share-link">Share</a>
       
       
     </footer>
@@ -300,7 +361,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="cktjr1vzd000hysoy95geb88f" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckto29yk7000g38oy6xbxc63d" class="article-share-link">Share</a>
       
       
     </footer>
@@ -350,7 +411,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="cktjr1vzf000kysoyh70pbzm6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckto29yk1000838oy75rc9lg1" class="article-share-link">Share</a>
       
       
     </footer>
@@ -394,7 +455,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="cktjr1vzb000gysoy0rgc1j5v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckto29yjz000738oyfyju9o9r" class="article-share-link">Share</a>
       
       
     </footer>
@@ -436,7 +497,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="cktjr1vy50000ysoyeiwoe4ph" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckto29yjr000138oyfj4cfido" class="article-share-link">Share</a>
       
       
     </footer>
@@ -482,53 +543,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="cktjr1vz6000cysoy8yd09byv" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-email" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/12/06/email/" class="article-date">
-  <time datetime="2020-12-06T08:55:08.000Z" itemprop="datePublished">2020-12-06</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/12/06/email/">代码分享:发送邮件</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>闲来无事写了一个发送邮件的代码，可以通过QQ邮箱发送邮件轰炸自己的好朋友。代码也非常简单，跟大家简单分享一下；<br>首先，我们要获得自己邮箱（发件人邮箱）的SMTP的授权码，步骤如下：</p>
-<p>1.打开自己的QQ邮箱设置界面，找到账户一栏。<br>2.找到&lt;POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务&gt;选项,选择开启服务下的&lt;POP3/SMTP服务&gt;选项。<br>3.点击开启，然后按照要求发送短信，之后便可以获得你邮箱的SMTP授权码。</p>
-<p>拿到授权码之后就比较简单了，将代码中需要修改的内容修改一下，然后将代码放入循环中就可以不断发送邮箱进行轰炸。<br>所需JAR包：javax.mail.jar；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public void sendEmail(String email, Message mes) throws Exception &#123;</span><br><span class="line">       String from &#x3D; &quot;xxxxxxxx@qq.com&quot;;</span><br><span class="line">       String to &#x3D; email;</span><br><span class="line">       String subject &#x3D; &quot;标题&quot;;</span><br><span class="line">       String body &#x3D; &quot;内容&quot;;</span><br><span class="line">       String smtpHost &#x3D; &quot;smtp.qq.com&quot;;</span><br><span class="line">       Properties props &#x3D; new Properties();</span><br><span class="line">       props.setProperty(&quot;mail.transport.protocol&quot;, &quot;smtp&quot;); &#x2F;&#x2F; 使用的协议（JavaMail规范要求）</span><br><span class="line">       props.setProperty(&quot;mail.smtp.host&quot;, smtpHost); &#x2F;&#x2F; 发件人的邮箱的 SMTP服务器地址</span><br><span class="line">       props.setProperty(&quot;mail.smtp.auth&quot;, &quot;true&quot;); &#x2F;&#x2F; 请求认证，参数名称与具体实现有关</span><br><span class="line">       &#x2F;&#x2F; 创建Session实例对象</span><br><span class="line">       Session session &#x3D; Session.getDefaultInstance(props);</span><br><span class="line">       &#x2F;&#x2F; 创建MimeMessage实例对象</span><br><span class="line">       MimeMessage message &#x3D; new MimeMessage(session);</span><br><span class="line">       &#x2F;&#x2F; 设置发件人</span><br><span class="line">       message.setFrom(new InternetAddress(from));</span><br><span class="line">       &#x2F;&#x2F; 设置收件人</span><br><span class="line">       message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(to));</span><br><span class="line">       &#x2F;&#x2F; 设置发送日期</span><br><span class="line">       message.setSentDate(new Date());</span><br><span class="line">       &#x2F;&#x2F; 设置邮件主题</span><br><span class="line">       message.setSubject(subject);</span><br><span class="line">       &#x2F;&#x2F; 设置纯文本内容的邮件正文</span><br><span class="line">       message.setText(body);</span><br><span class="line">       &#x2F;&#x2F; 保存并生成最终的邮件内容</span><br><span class="line">       message.saveChanges();</span><br><span class="line">       &#x2F;&#x2F; 设置为debug模式, 可以查看详细的发送 log</span><br><span class="line">       session.setDebug(true);</span><br><span class="line">       &#x2F;&#x2F; 获取Transport对象</span><br><span class="line">       Transport transport &#x3D; session.getTransport(&quot;smtp&quot;);</span><br><span class="line">       &#x2F;&#x2F; 第2个参数需要填写的是QQ邮箱的SMTP的授权码</span><br><span class="line">       transport.connect(from, &quot;发件人邮箱的SMTP授权码&quot;);</span><br><span class="line">       &#x2F;&#x2F; 发送，message.getAllRecipients() 获取到的是在创建邮件对象时添加的所有收件人, 抄送人, 密送人</span><br><span class="line">       transport.sendMessage(message, message.getAllRecipients());</span><br><span class="line">       transport.close();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="cktjr1vz40009ysoyhr3p7x68" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckto29yjx000538oyhs3t850u" class="article-share-link">Share</a>
       
       
     </footer>
@@ -539,6 +554,11 @@
 
   
 
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">下一页 &amp;raquo;</a>
+  </nav>
 
 </section>
         
@@ -563,7 +583,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a></li></ul>
     </div>
   </div>
 
@@ -580,6 +600,10 @@
           </li>
         
           <li>
+            <a href="/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/">JAVA8中流的几种常用方式</a>
+          </li>
+        
+          <li>
             <a href="/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/">VUE和前后端分离</a>
           </li>
         
@@ -589,10 +613,6 @@
         
           <li>
             <a href="/2021/06/06/Mysql%E4%B8%8EOracle/">Mysql与Oracle常用函数</a>
-          </li>
-        
-          <li>
-            <a href="/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/">驼峰命名的坑</a>
           </li>
         
       </ul>
