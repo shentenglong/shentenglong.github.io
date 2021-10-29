@@ -64,6 +64,56 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-关于树结构的构造" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/10/30/%E5%85%B3%E4%BA%8E%E6%A0%91%E7%BB%93%E6%9E%84%E7%9A%84%E6%9E%84%E9%80%A0/" class="article-date">
+  <time datetime="2021-10-30T03:34:48.000Z" itemprop="datePublished">2021-10-30</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/30/%E5%85%B3%E4%BA%8E%E6%A0%91%E7%BB%93%E6%9E%84%E7%9A%84%E6%9E%84%E9%80%A0/">关于树结构的构造</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天项目组的前端让我给一个树结构重新排下顺序，实现的时候想到了个较为方便方法，觉得很有意思，特意记录一下，顺便分享一下构造树结构数据的通用方法。<br>这是需要调整顺序的地方<br><img src="/images/3.png" alt=""><br>排序的规则就是把当前登录人所属公司排在第一位。<br>左侧组织结构树的数据是从视图拿出来的，都是标准的树形结构数据。开始是想每次都动态修改数据的ORDER_BY排序字段，但是这样较为麻烦，考虑了一下使用了下面的方法。<br>以前的sql语句</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT t.*  FROM view_bas_org_dept t</span><br></pre></td></tr></table></figure>
+<p>修改之后</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT t.*  FROM view_bas_org_dept t where t.id&#x3D;#&#123;orgId&#125;</span><br><span class="line">UNION</span><br><span class="line">SELECT t.*  FROM view_bas_org_dept t where t.id !&#x3D;#&#123;orgId&#125;</span><br></pre></td></tr></table></figure>
+<p>orgId即为当前登录人的公司ID，测试一下成功实现。</p>
+<p>半小时后前端又找到我，说是不行，如果登录人的公司是在三级或者四级,那么排序就无效了。我一听就懂了，还是自己没考虑周全，遂即调整了一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">SELECT t.*  FROM view_bas_org_dept t</span><br><span class="line">        &lt;if test&#x3D;&quot;orgIds!&#x3D;null&quot;&gt;</span><br><span class="line">            where t.id in</span><br><span class="line">            &lt;foreach collection&#x3D;&quot;orgIds&quot; open&#x3D;&quot;(&quot; close&#x3D;&quot;)&quot; separator&#x3D;&quot;,&quot; item&#x3D;&quot;item&quot;&gt;</span><br><span class="line">                #&#123;item&#125;</span><br><span class="line">            &lt;&#x2F;foreach&gt;</span><br><span class="line">            UNION</span><br><span class="line">            SELECT t.*</span><br><span class="line">            FROM view_bas_org_dept t where t.id not in</span><br><span class="line">            &lt;foreach collection&#x3D;&quot;orgIds&quot; open&#x3D;&quot;(&quot; close&#x3D;&quot;)&quot; separator&#x3D;&quot;,&quot; item&#x3D;&quot;item&quot;&gt;</span><br><span class="line">                #&#123;item&#125;</span><br><span class="line">            &lt;&#x2F;foreach&gt;</span><br><span class="line">        &lt;&#x2F;if&gt;</span><br></pre></td></tr></table></figure>
+<p>orgIds是当前登录人的公司ID以及其所有父级ID，不包括根节点。<br>再次测试，成功实现！<br>对于将集合转为树形结构，在此分享一个工具类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line">public class TreeBuildUtil &#123;</span><br><span class="line">	</span><br><span class="line">	&#x2F;** 构建节点树集合必须包含属性名 *&#x2F;</span><br><span class="line">	public static final String[] treeAttr &#x3D; &#123;&quot;id&quot;, &quot;pid&quot;, &quot;text&quot;&#125;;</span><br><span class="line"></span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 构建节点树数据，若无法构建或数据不存在返回空集合</span><br><span class="line">	 * @param list 需构建节点树集合数据</span><br><span class="line">	 * @return</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	public static List&lt;TreeNode&gt; buildTree(List&lt;Map&lt;String, Object&gt;&gt; list) &#123;</span><br><span class="line">		boolean flag &#x3D; isExitTreeAttr(list);</span><br><span class="line">		if(!flag) &#123;</span><br><span class="line">			return Collections.emptyList();</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		List&lt;TreeNode&gt; nodes &#x3D; new ArrayList&lt;TreeNode&gt;();</span><br><span class="line">		Map&lt;String, Object&gt; map &#x3D; new HashMap&lt;String,Object&gt;();</span><br><span class="line">		for(int i &#x3D; list.size() - 1; i &gt;&#x3D; 0; i--)&#123;</span><br><span class="line">			Map&lt;String, Object&gt; row &#x3D; list.get(i);</span><br><span class="line">			map.put(MapUtils.getString(row, &quot;id&quot;, MapUtils.getString(row, &quot;ID&quot;)), i);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		for (Map&lt;String, Object&gt; row : list) &#123;</span><br><span class="line">			if(!map.containsKey(MapUtils.getString(row, &quot;pid&quot;, MapUtils.getString(row, &quot;PID&quot;))))&#123;</span><br><span class="line">				TreeNode node &#x3D; new TreeNode();</span><br><span class="line">				fillTreeNodeProperty(node, row);</span><br><span class="line">				nodes.add(node);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		List&lt;TreeNode&gt; todo &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">		for (TreeNode item : nodes) &#123;</span><br><span class="line">			todo.add(item);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		while (!todo.isEmpty()) &#123;</span><br><span class="line">			TreeNode pNode &#x3D; todo.get(0);</span><br><span class="line">			todo.remove(0);</span><br><span class="line">			for (Map&lt;String, Object&gt; row : list) &#123;</span><br><span class="line">				if (pNode.getId().equals(MapUtils.getString(row, &quot;pid&quot;, MapUtils.getString(row, &quot;PID&quot;))))&#123;</span><br><span class="line">					TreeNode child &#x3D; new TreeNode();</span><br><span class="line">					fillTreeNodeProperty(child, row);</span><br><span class="line">					if (pNode.getChildren() &#x3D;&#x3D; null || pNode.getChildren().size() &lt; 1) &#123;</span><br><span class="line">						List&lt;TreeNode&gt; childrenlist &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">						childrenlist.add(child);</span><br><span class="line">						pNode.setChildren(childrenlist);</span><br><span class="line">					&#125;else&#123;</span><br><span class="line">						pNode.getChildren().add(child);</span><br><span class="line">					&#125;</span><br><span class="line">					todo.add(child);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		return nodes;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 将节点信息填充到节点中</span><br><span class="line">	 * @param node 节点</span><br><span class="line">	 * @param row 节点相关信息</span><br><span class="line">	 * @return</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">	public static TreeNode fillTreeNodeProperty(TreeNode node, Map&lt;String, Object&gt; row) &#123;</span><br><span class="line">		</span><br><span class="line">		node.setId(MapUtils.getString(row, &quot;id&quot;, MapUtils.getString(row, &quot;ID&quot;)));</span><br><span class="line">		node.setLabel(MapUtils.getString(row, &quot;text&quot;, MapUtils.getString(row, &quot;TEXT&quot;)));</span><br><span class="line"></span><br><span class="line">		Iterator&lt;?&gt; it &#x3D; row.entrySet().iterator();</span><br><span class="line">		while (it.hasNext()) &#123;</span><br><span class="line">			Map.Entry&lt;Object, String&gt; entry &#x3D; (Map.Entry&lt;Object, String&gt;) it.next();</span><br><span class="line">			String keystr &#x3D; entry.getKey().toString().toLowerCase();</span><br><span class="line">			node.addAttributes(keystr, row.get(entry.getKey()));</span><br><span class="line">		&#125;</span><br><span class="line">		return node;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 判断是否包含构建节点树的必要属性</span><br><span class="line">	 * @param list 集合数据</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	public static boolean isExitTreeAttr(List&lt;Map&lt;String, Object&gt;&gt; list) &#123;</span><br><span class="line">		if(list &#x3D;&#x3D; null || list.isEmpty()) &#123;</span><br><span class="line">			return false;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		Map&lt;String, Object&gt; tmp &#x3D; list.get(0);</span><br><span class="line">		boolean flag &#x3D; true;</span><br><span class="line">		for(String str : treeAttr) &#123;</span><br><span class="line">			if(!tmp.containsKey(str)) &#123;</span><br><span class="line">				flag &#x3D; false;</span><br><span class="line">				break;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		return flag;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际开发中，调用TreeBuildUtil的buildTree方法即可。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/10/30/%E5%85%B3%E4%BA%8E%E6%A0%91%E7%BB%93%E6%9E%84%E7%9A%84%E6%9E%84%E9%80%A0/" data-id="ckvc2htm30000cooy3kd4gseo" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-记一次需求的实现" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="article-date">
@@ -107,7 +157,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-id="ckto29yk3000b38oycfk083av" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-id="ckvc2htmn0009cooyabxcfopv" class="article-share-link">Share</a>
       
       
     </footer>
@@ -143,12 +193,13 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;MenuTreeVo&gt; result&#x3D;new ArrayList&lt;MenuTreeVo&gt;()</span><br><span class="line">List&lt;SysMenuEntity&gt; list&#x3D;new ArrayList&lt;SysMenuEntity&gt;()</span><br></pre></td></tr></table></figure>
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;作为示例的集合</span><br><span class="line">List&lt;MenuTreeVo&gt; result&#x3D;new ArrayList&lt;MenuTreeVo&gt;()</span><br><span class="line">List&lt;SysMenuEntity&gt; list&#x3D;new ArrayList&lt;SysMenuEntity&gt;()</span><br></pre></td></tr></table></figure>
+
 <p>1.过滤<br>对实体对象的某个字段进行过滤</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result.stream().filter(x -&gt; Constant.MENU_ROOT_CODE.equals(x.getPMenuCode())) &#x2F;&#x2F;过滤result中所有pMenuCode字段为指定值</span><br></pre></td></tr></table></figure>
 
-<p>2.类型转换<br>将list<sysMenuEntity> 转换为list<MenuTreeVo></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;MenuTreeVo&gt; menuTreeVoList &#x3D; list.stream().map(this::wrap).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;当前类需实现Wrap&lt;MenuTreeVo, SysMenuEntity&gt;类，重写wrap方法</span><br><span class="line">@Override</span><br><span class="line">    public MenuTreeVo wrap(SysMenuEntity sysMenuEntity) &#123;</span><br><span class="line">        MenuTreeVo tree &#x3D; new MenuTreeVo();</span><br><span class="line">        BeanUtil.copyProperties(sysMenuEntity, tree);</span><br><span class="line">        return tree;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>2.类型转换</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;将list&lt;sysMenuEntity&gt; 转换为list&lt;MenuTreeVo&gt;</span><br><span class="line">List&lt;MenuTreeVo&gt; menuTreeVoList &#x3D; list.stream().map(this::wrap).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;当前类需实现Wrap&lt;MenuTreeVo, SysMenuEntity&gt;类，重写wrap方法</span><br><span class="line">@Override</span><br><span class="line">    public MenuTreeVo wrap(SysMenuEntity sysMenuEntity) &#123;</span><br><span class="line">        MenuTreeVo tree &#x3D; new MenuTreeVo();</span><br><span class="line">        BeanUtil.copyProperties(sysMenuEntity, tree);</span><br><span class="line">        return tree;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
 <p>3.排序<br>之前的排序方法:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result.sort((a,b) -&gt;Long.compare(a.getOrdBy(),b.getOrdBy()); &#x2F;&#x2F;通过OrdBy字段进行从小到大的排序 </span><br><span class="line">result.sort((a,b) -&gt;Long.compare(b.getOrdBy(),a.getOrdBy()); &#x2F;&#x2F;通过OrdBy字段进行从大到小的排序</span><br></pre></td></tr></table></figure>
@@ -168,7 +219,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" data-id="ckto29yjj000038oye799d6wz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" data-id="ckvc2htmi0005cooy9hjtdjkg" class="article-share-link">Share</a>
       
       
     </footer>
@@ -212,7 +263,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="ckto29yjw000438oy69h68vd6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="ckvc2htmy000mcooybuyccy9y" class="article-share-link">Share</a>
       
       
     </footer>
@@ -265,7 +316,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" data-id="ckto29yk4000d38oy0lyweo7m" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" data-id="ckvc2htmh0004cooyhb58fjkn" class="article-share-link">Share</a>
       
       
     </footer>
@@ -313,7 +364,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckto29yjv000338oy9d1ed4gt" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="ckvc2htmd0002cooy0f0j945n" class="article-share-link">Share</a>
       
       
     </footer>
@@ -361,7 +412,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckto29yk7000g38oy6xbxc63d" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="ckvc2htmu000hcooy1rq9hkhk" class="article-share-link">Share</a>
       
       
     </footer>
@@ -411,7 +462,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckto29yk1000838oy75rc9lg1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="ckvc2htmw000jcooy6rwsaz46" class="article-share-link">Share</a>
       
       
     </footer>
@@ -455,7 +506,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckto29yjz000738oyfyju9o9r" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="ckvc2htmq000ccooyhjz94wo3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -497,53 +548,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckto29yjr000138oyfj4cfido" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-多线程之ThreadPoolExecutor" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" class="article-date">
-  <time datetime="2021-02-13T12:26:44.000Z" itemprop="datePublished">2021-02-13</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/">线程池ThreadPoolExecutor的简单使用。</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近因为工作需求，需要一直对txt文件进行读写操作。简单来说就是需要从一个txt文件中读取所有的链接，再对每一个链接进行独立处理。将处理的结果与该链接写入另一个txt文件中，从而筛选出有用的链接。起初因为需要处理的链接不是很多，就只用了单个线程。现在随着项目的开展，链接成倍增加。于是想着用多线程来取代之前的单线程进行读写操作。现在简单记录一下逻辑及实现过程。</p>
-<p>1.将txt中所有的链接读取出来，存储在队列当中。<br>2.每一个线程依次去队列中取链接，进行处理和写入的操作。</p>
-<p>逻辑确认之后写起来就非常简单了，具体代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">public class ReadByTextThread   &#123;</span><br><span class="line">    private static LinkedBlockingQueue&lt;String&gt; queue_str &#x3D; new LinkedBlockingQueue&lt;&gt;();</span><br><span class="line">    private static Logger logger &#x3D; LoggerFactory.getLogger(InsertSiteUrlSupply.class);</span><br><span class="line">    private static int threadSize &#x3D; 100;</span><br><span class="line">    private static ThreadPoolExecutor executorService &#x3D; (ThreadPoolExecutor) Executors.newFixedThreadPool(threadSize);</span><br><span class="line">    private static BufferedWriter bfw;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            File file1 &#x3D; new File(&quot;D:\\test\\4.txt&quot;);</span><br><span class="line">            List&lt;String&gt; list  &#x3D; FileUtils.readLines(file1, &quot;utf-8&quot;);</span><br><span class="line">            File file2 &#x3D; new File(&quot;D:\\test\\5.txt&quot;);</span><br><span class="line">            bfw &#x3D; new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file2,true)));</span><br><span class="line">            for (String str : list) &#123;</span><br><span class="line">                if (StringUtils.isNotBlank(str)) &#123;</span><br><span class="line">                    queue_str.put(str);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            logger.info(&quot;queue.size &#x3D; &#123;&#125;&quot;, queue_str.size());</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; threadSize; i++) &#123;</span><br><span class="line">            executorService.submit(new ReadByTextThread.SpiderThread_str());</span><br><span class="line">        &#125;</span><br><span class="line">        logger.info(&quot;当前运行线程数：&#123;&#125;&quot;, threadSize);</span><br><span class="line">    &#125;</span><br><span class="line">    private static class SpiderThread_str implements Runnable &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    String str &#x3D; queue_str.poll();</span><br><span class="line">                    if (StringUtils.isBlank(str)) &#123;</span><br><span class="line">                        Thread.sleep(1);</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line">                    Response response&#x3D;new ReadByTextThread().getResponse(str);</span><br><span class="line">                    if(response&#x3D;&#x3D;null)&#123;</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line">                    Document doc&#x3D; Jsoup.parse(response.getRawText());</span><br><span class="line">                    String title&#x3D;doc.select(&quot;#posthead &gt; div.title.clearfix &gt; h3&quot;).text();</span><br><span class="line">                    if(title.equals(&quot;&quot;))&#123;</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line">                    bfw.write(str+&quot;\t&quot;+title);</span><br><span class="line">                    bfw.flush();</span><br><span class="line">                    bfw.newLine();</span><br><span class="line">                    logger.info(&quot;线程名称[&#123;&#125;], 链接[&#123;&#125;],&quot;, Thread.currentThread().getName(), str);</span><br><span class="line">                    logger.info(&quot;【剩余：&#123;&#125; - &#123;&#125;】&quot;, queue_str.size(), str);</span><br><span class="line">                &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    protected Response getResponse( String url) &#123;</span><br><span class="line">        Response response&#x3D;null;</span><br><span class="line">        Random random&#x3D;new Random();</span><br><span class="line">        String sttr&#x3D;&quot;Mozilla&#x2F;5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;[ID].0.[num].190 Safari&#x2F;537.36&quot;;</span><br><span class="line">        for(int i&#x3D;0;i&lt;&#x3D;10;i++)&#123;</span><br><span class="line">            int id&#x3D;random.nextInt(100);</span><br><span class="line">            int num&#x3D;random.nextInt(5000);</span><br><span class="line">            String user_Agent&#x3D;sttr.replace(&quot;[ID]&quot;,id+&quot;&quot;).replace(&quot;[num]&quot;,num+&quot;&quot;);</span><br><span class="line">            Site site_1 &#x3D; Site.me().setUserAgent(WebpageConstant.USER_AGENT).setCharset(null)</span><br><span class="line">                    .addHeader(&quot;User-Agent&quot;,user_Agent);</span><br><span class="line">            response&#x3D;SysUtils.cycleDownloader(site_1, new Request(url), true);</span><br><span class="line">            if(response&#x3D;&#x3D;null)&#123;</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line">            else &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return response;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="ckto29yjx000538oyhs3t850u" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="ckvc2htmj0006cooyd0kth3yw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -583,7 +588,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a></li></ul>
     </div>
   </div>
 
@@ -594,6 +599,10 @@
     <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2021/10/30/%E5%85%B3%E4%BA%8E%E6%A0%91%E7%BB%93%E6%9E%84%E7%9A%84%E6%9E%84%E9%80%A0/">关于树结构的构造</a>
+          </li>
         
           <li>
             <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/">记一次需求的实现</a>
@@ -609,10 +618,6 @@
         
           <li>
             <a href="/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/">VUE+springBoot项目部署</a>
-          </li>
-        
-          <li>
-            <a href="/2021/06/06/Mysql%E4%B8%8EOracle/">Mysql与Oracle常用函数</a>
           </li>
         
       </ul>
