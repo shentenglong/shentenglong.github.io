@@ -15,7 +15,7 @@
 <meta property="og:description" content="123&#x2F;&#x2F;作为示例的集合List&lt;MenuTreeVo&gt; result&#x3D;new ArrayList&lt;MenuTreeVo&gt;()List&lt;SysMenuEntity&gt; list&#x3D;new ArrayList&lt;SysMenuEntity&gt;()  1.过滤对实体对象的某个字段进行过滤 1result.stream().">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-08-13T07:22:38.000Z">
-<meta property="article:modified_time" content="2021-09-18T01:29:43.815Z">
+<meta property="article:modified_time" content="2021-12-20T03:33:59.255Z">
 <meta property="article:author" content="shen">
 <meta name="twitter:card" content="summary">
   
@@ -98,7 +98,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result.stream().filter(x -&gt; Constant.MENU_ROOT_CODE.equals(x.getPMenuCode())) &#x2F;&#x2F;过滤result中所有pMenuCode字段为指定值</span><br></pre></td></tr></table></figure>
 
 <p>2.类型转换</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;将list&lt;sysMenuEntity&gt; 转换为list&lt;MenuTreeVo&gt;</span><br><span class="line">List&lt;MenuTreeVo&gt; menuTreeVoList &#x3D; list.stream().map(this::wrap).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;当前类需实现Wrap&lt;MenuTreeVo, SysMenuEntity&gt;类，重写wrap方法</span><br><span class="line">@Override</span><br><span class="line">    public MenuTreeVo wrap(SysMenuEntity sysMenuEntity) &#123;</span><br><span class="line">        MenuTreeVo tree &#x3D; new MenuTreeVo();</span><br><span class="line">        BeanUtil.copyProperties(sysMenuEntity, tree);</span><br><span class="line">        return tree;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;将list&lt;sysMenuEntity&gt; 转换为list&lt;MenuTreeVo&gt;</span><br><span class="line">List&lt;MenuTreeVo&gt; menuTreeVoList &#x3D; list.stream().map(this::wrap).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;当前类需实现Wrap&lt;MenuTreeVo, SysMenuEntity&gt;接口，重写wrap方法</span><br><span class="line">@Override</span><br><span class="line">    public MenuTreeVo wrap(SysMenuEntity sysMenuEntity) &#123;</span><br><span class="line">        MenuTreeVo tree &#x3D; new MenuTreeVo();</span><br><span class="line">        BeanUtil.copyProperties(sysMenuEntity, tree);</span><br><span class="line">        return tree;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
 <p>3.排序<br>之前的排序方法:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result.sort((a,b) -&gt;Long.compare(a.getOrdBy(),b.getOrdBy()); &#x2F;&#x2F;通过OrdBy字段进行从小到大的排序 </span><br><span class="line">result.sort((a,b) -&gt;Long.compare(b.getOrdBy(),a.getOrdBy()); &#x2F;&#x2F;通过OrdBy字段进行从大到小的排序</span><br></pre></td></tr></table></figure>
@@ -118,7 +118,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" data-id="ckvc3wi880000fkoydl7zgonv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" data-id="ckxe4vyzi0000a0ffbraq5yet" class="article-share-link">Share</a>
       
       
     </footer>
