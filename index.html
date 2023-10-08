@@ -64,53 +64,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-Mysql使用函数之后的查询效率" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/" class="article-date">
-  <time datetime="2022-04-28T07:21:34.000Z" itemprop="datePublished">2022-04-28</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/">JAVA中$ref循环引用的问题</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>首先复现一下问题。<br>接口是为了获取三个集合，首先是用JSON返回集合数据，代码片段如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;所有环节信息</span><br><span class="line">List&lt;WfApproveHisVo&gt; dealList &#x3D; allHisVoList.stream().filter(x -&gt; (UsiFlowState.ACT_APP_EXCEPTION !&#x3D; x.getCurrentstate())).sorted(Comparator.comparing(WfApproveHisVo::getStarttime)).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;未完成环节信息</span><br><span class="line">List&lt;WfApproveHisVo&gt; unDealList &#x3D; dealList.stream().filter(x-&gt;(UsiFlowState.WORKITEM_WAITING_RECEIVE&#x3D;&#x3D;x.getCurrentstate()||UsiFlowState.WORKITEM_RUNNING&#x3D;&#x3D;x.getCurrentstate())).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;意见按照结束时间排序，同时过滤撤回的意见</span><br><span class="line">List&lt;WfApproveHisVo&gt; opinionList &#x3D; allHisVoList.stream().filter(x -&gt; (UsiFlowState.ACT_APP_EXCEPTION !&#x3D; x.getCurrentstate())&amp;&amp; (!BillTaskTypeEnum.BILL_RECALL.getInfo().equals(x.getCurrentStateName()))&amp;&amp;(!Constant.SYS_WITHDRAW.equals(x.getWorkmemory()))&amp;&amp;(!StringUtils.isEmpty(x.getWorkmemory()))).sorted(Comparator.comparing(WfApproveHisVo::getEndtime)).collect(Collectors.toList());</span><br><span class="line">dataVo.setDealList(dealList);</span><br><span class="line">dataVo.setUnDealList(unDealList);</span><br><span class="line">dataVo.setOpinionList(opinionList);</span><br><span class="line">return dataVo;</span><br></pre></td></tr></table></figure>
-<p>到了前台接收的时候获取的数据却是一串奇怪字符<br><img src="/images/REF/1.png" alt=""><br>查了下资料发现这个是指向引用的意思。表示opinionList和unDealList中都是dealList里面的元素，所以opinionList里面的数据就直接指向了dealList，但是前端却无法识别这种形式，所以还是需要返回正常的集合数据。接下来就要吧这个问题解决。<br>1.关于循环引用的判定。<br>之所以系统判定为循环引用，应该是集合中的两个元素equals比较为true，所以第一个元素就指向了第二个元素。那么最简单的解决方式就是迭代集合，New一个新元素，这样equals值肯定为false，按照此思路修改代码如下，测试通过，可以正常返回数据。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;避免重复引用问题</span><br><span class="line">List&lt;WfApproveHisVo&gt; opinionCopyList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">opinionList.forEach(x-&gt;&#123;</span><br><span class="line">    WfApproveHisVo vo &#x3D;new WfApproveHisVo();</span><br><span class="line">    BeanUtils.copyProperties(x,vo);</span><br><span class="line">    opinionCopyList.add(vo);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">List&lt;WfApproveHisVo&gt; unDealCopyList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">unDealList.forEach(x-&gt;&#123;</span><br><span class="line">    WfApproveHisVo vo &#x3D;new WfApproveHisVo();</span><br><span class="line">    BeanUtils.copyProperties(x,vo);</span><br><span class="line">    unDealCopyList.add(vo);</span><br><span class="line">&#125;);</span><br><span class="line">dataVo.setDealList(dealList);</span><br><span class="line">dataVo.setUnDealList(unDealCopyList);</span><br><span class="line">dataVo.setOpinionList(opinionCopyList);</span><br><span class="line">return dataVo;</span><br></pre></td></tr></table></figure>
-<p>问题虽然解决了，但是上述方法会进行集合迭代，所以我就想着有没有其他的解决方式。<br>2.关闭fastjson的循环检测。<br>这是百度看到的一种说法，于是我把接口的返回值改写为了JSONObject，加上了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JSON.toJSONString(list, SerializerFeature.DisableCircularReferenceDetect)</span><br></pre></td></tr></table></figure>
-<p>但是我试了几次都没有成功。最后因为时间的原因还是采取了第一种解决方式。<br>显然这个问题还是没有得到妥善的解决，在之后有时间的情况下可以找到最优解。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/" data-id="clngwbrpd000a3mff6jdq6wwy" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-JAVA中EXCEL和WORD文件的导出的副本" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2022/04/28/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA%E7%9A%84%E5%89%AF%E6%9C%AC/" class="article-date">
@@ -148,7 +101,54 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2022/04/28/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA%E7%9A%84%E5%89%AF%E6%9C%AC/" data-id="clngwbrpm000u3mff3jsbap39" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2022/04/28/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA%E7%9A%84%E5%89%AF%E6%9C%AC/" data-id="clngwh10j00069gffgtla8dag" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Mysql使用函数之后的查询效率" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/" class="article-date">
+  <time datetime="2022-04-28T07:21:34.000Z" itemprop="datePublished">2022-04-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/">JAVA中$ref循环引用的问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>首先复现一下问题。<br>接口是为了获取三个集合，首先是用JSON返回集合数据，代码片段如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;所有环节信息</span><br><span class="line">List&lt;WfApproveHisVo&gt; dealList &#x3D; allHisVoList.stream().filter(x -&gt; (UsiFlowState.ACT_APP_EXCEPTION !&#x3D; x.getCurrentstate())).sorted(Comparator.comparing(WfApproveHisVo::getStarttime)).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;未完成环节信息</span><br><span class="line">List&lt;WfApproveHisVo&gt; unDealList &#x3D; dealList.stream().filter(x-&gt;(UsiFlowState.WORKITEM_WAITING_RECEIVE&#x3D;&#x3D;x.getCurrentstate()||UsiFlowState.WORKITEM_RUNNING&#x3D;&#x3D;x.getCurrentstate())).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;意见按照结束时间排序，同时过滤撤回的意见</span><br><span class="line">List&lt;WfApproveHisVo&gt; opinionList &#x3D; allHisVoList.stream().filter(x -&gt; (UsiFlowState.ACT_APP_EXCEPTION !&#x3D; x.getCurrentstate())&amp;&amp; (!BillTaskTypeEnum.BILL_RECALL.getInfo().equals(x.getCurrentStateName()))&amp;&amp;(!Constant.SYS_WITHDRAW.equals(x.getWorkmemory()))&amp;&amp;(!StringUtils.isEmpty(x.getWorkmemory()))).sorted(Comparator.comparing(WfApproveHisVo::getEndtime)).collect(Collectors.toList());</span><br><span class="line">dataVo.setDealList(dealList);</span><br><span class="line">dataVo.setUnDealList(unDealList);</span><br><span class="line">dataVo.setOpinionList(opinionList);</span><br><span class="line">return dataVo;</span><br></pre></td></tr></table></figure>
+<p>到了前台接收的时候获取的数据却是一串奇怪字符<br><img src="/images/REF/1.png" alt=""><br>查了下资料发现这个是指向引用的意思。表示opinionList和unDealList中都是dealList里面的元素，所以opinionList里面的数据就直接指向了dealList，但是前端却无法识别这种形式，所以还是需要返回正常的集合数据。接下来就要吧这个问题解决。<br>1.关于循环引用的判定。<br>之所以系统判定为循环引用，应该是集合中的两个元素equals比较为true，所以第一个元素就指向了第二个元素。那么最简单的解决方式就是迭代集合，New一个新元素，这样equals值肯定为false，按照此思路修改代码如下，测试通过，可以正常返回数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;避免重复引用问题</span><br><span class="line">List&lt;WfApproveHisVo&gt; opinionCopyList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">opinionList.forEach(x-&gt;&#123;</span><br><span class="line">    WfApproveHisVo vo &#x3D;new WfApproveHisVo();</span><br><span class="line">    BeanUtils.copyProperties(x,vo);</span><br><span class="line">    opinionCopyList.add(vo);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">List&lt;WfApproveHisVo&gt; unDealCopyList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">unDealList.forEach(x-&gt;&#123;</span><br><span class="line">    WfApproveHisVo vo &#x3D;new WfApproveHisVo();</span><br><span class="line">    BeanUtils.copyProperties(x,vo);</span><br><span class="line">    unDealCopyList.add(vo);</span><br><span class="line">&#125;);</span><br><span class="line">dataVo.setDealList(dealList);</span><br><span class="line">dataVo.setUnDealList(unDealCopyList);</span><br><span class="line">dataVo.setOpinionList(opinionCopyList);</span><br><span class="line">return dataVo;</span><br></pre></td></tr></table></figure>
+<p>问题虽然解决了，但是上述方法会进行集合迭代，所以我就想着有没有其他的解决方式。<br>2.关闭fastjson的循环检测。<br>这是百度看到的一种说法，于是我把接口的返回值改写为了JSONObject，加上了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JSON.toJSONString(list, SerializerFeature.DisableCircularReferenceDetect)</span><br></pre></td></tr></table></figure>
+<p>但是我试了几次都没有成功。最后因为时间的原因还是采取了第一种解决方式。<br>显然这个问题还是没有得到妥善的解决，在之后有时间的情况下可以找到最优解。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/" data-id="clngwh10k00099gffhax28nq7" class="article-share-link">Share</a>
       
       
     </footer>
@@ -204,7 +204,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2022/02/16/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA/" data-id="clngwbrpc00083mff02cj9zyo" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2022/02/16/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA/" data-id="clngwh10j00079gff91ggc756" class="article-share-link">Share</a>
       
       
     </footer>
@@ -254,7 +254,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/10/30/%E5%85%B3%E4%BA%8E%E6%A0%91%E7%BB%93%E6%9E%84%E7%9A%84%E6%9E%84%E9%80%A0/" data-id="clngwbrpd000b3mff3reg8rr6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/10/30/%E5%85%B3%E4%BA%8E%E6%A0%91%E7%BB%93%E6%9E%84%E7%9A%84%E6%9E%84%E9%80%A0/" data-id="clngwh10m000d9gff0qepdva4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -307,7 +307,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-id="clngwbrpj000n3mff2uq5hc9k" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-id="clngwh10p000n9gff62hqhuxw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -369,7 +369,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" data-id="clngwbrp700023mff9h551m5j" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" data-id="clngwh10600009gffgd64cho5" class="article-share-link">Share</a>
       
       
     </footer>
@@ -413,7 +413,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="clngwbrpi000k3mff258e8e8g" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="clngwh10o000j9gffcjle4g6f" class="article-share-link">Share</a>
       
       
     </footer>
@@ -466,7 +466,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" data-id="clngwbrph000i3mfffb449w3h" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" data-id="clngwh10l000a9gffca4d25hi" class="article-share-link">Share</a>
       
       
     </footer>
@@ -514,7 +514,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="clngwbroy00003mff2qdo15wa" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="clngwh10e00029gff53x7fjqt" class="article-share-link">Share</a>
       
       
     </footer>
@@ -562,7 +562,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="clngwbrpk000p3mff5f7n40xf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="clngwh10q000s9gff50tbbyz7" class="article-share-link">Share</a>
       
       
     </footer>
@@ -615,11 +615,11 @@
       <ul>
         
           <li>
-            <a href="/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/">JAVA中$ref循环引用的问题</a>
+            <a href="/2022/04/28/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA%E7%9A%84%E5%89%AF%E6%9C%AC/">JAVA中$ref循环引用的问题</a>
           </li>
         
           <li>
-            <a href="/2022/04/28/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA%E7%9A%84%E5%89%AF%E6%9C%AC/">JAVA中$ref循环引用的问题</a>
+            <a href="/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/">JAVA中$ref循环引用的问题</a>
           </li>
         
           <li>
