@@ -64,6 +64,56 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-递归中的优化-爬楼梯" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" class="article-date">
+  <time datetime="2021-04-04T11:55:57.000Z" itemprop="datePublished">2021-04-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/">爬楼梯</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>1、2、3、5、8、13、21、34</p>
+<p>今天刷leetcode的时候碰到了一个比较经典的问题，也就是爬楼梯。题目如下:<br>//假设你正在爬楼梯。需要 n 阶你才能到达楼顶。<br>//<br>// 每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？<br>//<br>// 注意：给定 n 是一个正整数。<br>//<br>// 示例 1：<br>//<br>// 输入： 2<br>//输出： 2<br>//解释： 有两种方法可以爬到楼顶。<br>//1.  1 阶 + 1 阶<br>//2.  2 阶<br>//<br>// 示例 2：<br>//<br>// 输入： 3<br>//输出： 3<br>//解释： 有三种方法可以爬到楼顶。<br>//1.  1 阶 + 1 阶 + 1 阶<br>//2.  1 阶 + 2 阶<br>//3.  2 阶 + 1 阶<br>第一反应就是递归，跟以前碰到的兔子问题一样。遂写出如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Solution &#123;</span><br><span class="line"> public static int climbStairs(int n) &#123;</span><br><span class="line">        if(n&#x3D;&#x3D;0)&#123;</span><br><span class="line">            return 0;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;1)&#123;</span><br><span class="line">            return 1;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;2)&#123;</span><br><span class="line">            return 2;</span><br><span class="line">        &#125;</span><br><span class="line">        for(int i&#x3D;3;i&lt;&#x3D;n;i++)&#123;</span><br><span class="line">            return climbStairs(n-1)+climbStairs(n-2);</span><br><span class="line">        &#125;</span><br><span class="line">        return 0;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>写完直接提交代码，提示<br>            运行失败:<br>            Time Limit Exceeded<br>            测试用例:45<br>            stdout:<br>从测试结果可以看出当需要爬45阶的楼梯时，就提示了超时。由此可见这种递归无法实现题目的要求。<br>随即我就想着能不能把递归给优化一下，脑海第一反应就是把每一次运算的结果放入map集合中，之后若需要该结果则直接从集合中取值。<br>例如 将我们在以10阶楼梯为条件去运行改代码，那么会计算9阶和8阶的结果，9阶会计算8阶和7阶，这样就会重复计算8阶的结果。我们就可以在第一次计算8阶结果的时候，把它存入Map集合中去。节省计算时间，实现如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">class Solution &#123;</span><br><span class="line">private static   Map&lt;Integer,Integer&gt; map&#x3D;new HashMap&lt;Integer, Integer&gt;();</span><br><span class="line"> public static int climbStairs(int n) &#123;</span><br><span class="line">        if(n&#x3D;&#x3D;0)&#123;</span><br><span class="line">            return 0;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;1)&#123;</span><br><span class="line">            return 1;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;2)&#123;</span><br><span class="line">            return 2;</span><br><span class="line">        &#125;</span><br><span class="line">        int result&#x3D;0;</span><br><span class="line"></span><br><span class="line">        for(int i&#x3D;3;i&lt;&#x3D;n;i++)&#123;</span><br><span class="line">            int result1&#x3D;0;</span><br><span class="line">            int result2&#x3D;0;</span><br><span class="line">            if(map.containsKey(i-1))&#123;</span><br><span class="line">                result1&#x3D;map.get(i-1);</span><br><span class="line">            &#125;</span><br><span class="line">            if(map.containsKey(i-2))&#123;</span><br><span class="line">                result2&#x3D;map.get(i-2);</span><br><span class="line">            &#125;</span><br><span class="line">            if(!map.containsKey(i-1))&#123;</span><br><span class="line">                result1&#x3D;climbStairs(i-1);</span><br><span class="line">                map.put(i-1,result1);</span><br><span class="line">            &#125;</span><br><span class="line">            if(!map.containsKey(i-2))&#123;</span><br><span class="line">                result2&#x3D;climbStairs(i-2);</span><br><span class="line">                map.put(i-2,result2);</span><br><span class="line">            &#125;</span><br><span class="line">            result&#x3D;result1+result2;</span><br><span class="line">        &#125;</span><br><span class="line">        return result;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>写完之后测试一下是否节约时间</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">long begin&#x3D;new Date().getTime();</span><br><span class="line">System.out.println(climbStairs(40));</span><br><span class="line">long end&#x3D;new Date().getTime();</span><br><span class="line">System.out.println(&quot;用时&quot;+(end-begin)+&quot;毫秒&quot;);</span><br></pre></td></tr></table></figure>
+<p>用第一种递归输出如下:<br>165580141<br>用时811毫秒<br>使用优化之后的输出如下:<br>165580141<br>用时2毫秒<br>效果还是很不错的，直接提交代码，leetcode那边也显示通过了。<br>            解答成功:<br>            执行耗时:1 ms,击败了100.00% 的Java用户<br>            内存消耗:35.2 MB,击败了44.77% 的Java用户<br>提交之后又在网上继续看这方面的东西，看到了另一种优化方法，经测试所用时间远小于我上面的方法，在此也分享一下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public static int climbStairs(int n) &#123;</span><br><span class="line">      if(n&#x3D;&#x3D;0)&#123;</span><br><span class="line">           return 0;</span><br><span class="line">       &#125;</span><br><span class="line">       if(n&#x3D;&#x3D;1)&#123;</span><br><span class="line">           return 1;</span><br><span class="line">       &#125;</span><br><span class="line">       if(n&#x3D;&#x3D;2)&#123;</span><br><span class="line">           return 2;</span><br><span class="line">       &#125;</span><br><span class="line">       int start&#x3D;1;</span><br><span class="line">       int end&#x3D;2;</span><br><span class="line">       int count&#x3D;0;</span><br><span class="line">       for(int i&#x3D;3;i&lt;&#x3D;n;i++)&#123;</span><br><span class="line">           int temp&#x3D;start;</span><br><span class="line">           count&#x3D;end+start;</span><br><span class="line">           start&#x3D;end;</span><br><span class="line">           end &#x3D;start+temp;</span><br><span class="line">       &#125;</span><br><span class="line">       return count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="clngwbrpk000s3mffd8l72j1s" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-算法" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/03/24/%E7%AE%97%E6%B3%95/" class="article-date">
@@ -98,7 +148,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="cl2io4rg1000f5cffhxvz2dfp" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/24/%E7%AE%97%E6%B3%95/" data-id="clngwbrpg000f3mffgkvmhgja" class="article-share-link">Share</a>
       
       
     </footer>
@@ -140,7 +190,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="cl2io4rfw00035cffhysq9cy8" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/07/Mysql%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%AE%80%E6%98%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" data-id="clngwbrpa00053mff3gca9j85" class="article-share-link">Share</a>
       
       
     </footer>
@@ -186,7 +236,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="cl2io4rfy00085cff88vqdruc" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/02/13/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8BThreadPoolExecutor/" data-id="clngwbrpf000e3mff9mengsm7" class="article-share-link">Share</a>
       
       
     </footer>
@@ -232,7 +282,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="cl2io4rg4000o5cff85txf931" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/12/06/email/" data-id="clngwbrpb00073mffhbp8d80l" class="article-share-link">Share</a>
       
       
     </footer>
@@ -285,6 +335,10 @@
       <ul>
         
           <li>
+            <a href="/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/">JAVA中$ref循环引用的问题</a>
+          </li>
+        
+          <li>
             <a href="/2022/04/28/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA%E7%9A%84%E5%89%AF%E6%9C%AC/">JAVA中$ref循环引用的问题</a>
           </li>
         
@@ -300,10 +354,6 @@
             <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/">记一次需求的实现</a>
           </li>
         
-          <li>
-            <a href="/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/">JAVA8中流的几种常用方式</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -316,7 +366,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2022 shen<br>
+      &copy; 2023 shen<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

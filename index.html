@@ -64,6 +64,53 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Mysql使用函数之后的查询效率" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/" class="article-date">
+  <time datetime="2022-04-28T07:21:34.000Z" itemprop="datePublished">2022-04-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">个人记录</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/">JAVA中$ref循环引用的问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>首先复现一下问题。<br>接口是为了获取三个集合，首先是用JSON返回集合数据，代码片段如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;所有环节信息</span><br><span class="line">List&lt;WfApproveHisVo&gt; dealList &#x3D; allHisVoList.stream().filter(x -&gt; (UsiFlowState.ACT_APP_EXCEPTION !&#x3D; x.getCurrentstate())).sorted(Comparator.comparing(WfApproveHisVo::getStarttime)).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;未完成环节信息</span><br><span class="line">List&lt;WfApproveHisVo&gt; unDealList &#x3D; dealList.stream().filter(x-&gt;(UsiFlowState.WORKITEM_WAITING_RECEIVE&#x3D;&#x3D;x.getCurrentstate()||UsiFlowState.WORKITEM_RUNNING&#x3D;&#x3D;x.getCurrentstate())).collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;意见按照结束时间排序，同时过滤撤回的意见</span><br><span class="line">List&lt;WfApproveHisVo&gt; opinionList &#x3D; allHisVoList.stream().filter(x -&gt; (UsiFlowState.ACT_APP_EXCEPTION !&#x3D; x.getCurrentstate())&amp;&amp; (!BillTaskTypeEnum.BILL_RECALL.getInfo().equals(x.getCurrentStateName()))&amp;&amp;(!Constant.SYS_WITHDRAW.equals(x.getWorkmemory()))&amp;&amp;(!StringUtils.isEmpty(x.getWorkmemory()))).sorted(Comparator.comparing(WfApproveHisVo::getEndtime)).collect(Collectors.toList());</span><br><span class="line">dataVo.setDealList(dealList);</span><br><span class="line">dataVo.setUnDealList(unDealList);</span><br><span class="line">dataVo.setOpinionList(opinionList);</span><br><span class="line">return dataVo;</span><br></pre></td></tr></table></figure>
+<p>到了前台接收的时候获取的数据却是一串奇怪字符<br><img src="/images/REF/1.png" alt=""><br>查了下资料发现这个是指向引用的意思。表示opinionList和unDealList中都是dealList里面的元素，所以opinionList里面的数据就直接指向了dealList，但是前端却无法识别这种形式，所以还是需要返回正常的集合数据。接下来就要吧这个问题解决。<br>1.关于循环引用的判定。<br>之所以系统判定为循环引用，应该是集合中的两个元素equals比较为true，所以第一个元素就指向了第二个元素。那么最简单的解决方式就是迭代集合，New一个新元素，这样equals值肯定为false，按照此思路修改代码如下，测试通过，可以正常返回数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;避免重复引用问题</span><br><span class="line">List&lt;WfApproveHisVo&gt; opinionCopyList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">opinionList.forEach(x-&gt;&#123;</span><br><span class="line">    WfApproveHisVo vo &#x3D;new WfApproveHisVo();</span><br><span class="line">    BeanUtils.copyProperties(x,vo);</span><br><span class="line">    opinionCopyList.add(vo);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">List&lt;WfApproveHisVo&gt; unDealCopyList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">unDealList.forEach(x-&gt;&#123;</span><br><span class="line">    WfApproveHisVo vo &#x3D;new WfApproveHisVo();</span><br><span class="line">    BeanUtils.copyProperties(x,vo);</span><br><span class="line">    unDealCopyList.add(vo);</span><br><span class="line">&#125;);</span><br><span class="line">dataVo.setDealList(dealList);</span><br><span class="line">dataVo.setUnDealList(unDealCopyList);</span><br><span class="line">dataVo.setOpinionList(opinionCopyList);</span><br><span class="line">return dataVo;</span><br></pre></td></tr></table></figure>
+<p>问题虽然解决了，但是上述方法会进行集合迭代，所以我就想着有没有其他的解决方式。<br>2.关闭fastjson的循环检测。<br>这是百度看到的一种说法，于是我把接口的返回值改写为了JSONObject，加上了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JSON.toJSONString(list, SerializerFeature.DisableCircularReferenceDetect)</span><br></pre></td></tr></table></figure>
+<p>但是我试了几次都没有成功。最后因为时间的原因还是采取了第一种解决方式。<br>显然这个问题还是没有得到妥善的解决，在之后有时间的情况下可以找到最优解。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/" data-id="clngwbrpd000a3mff6jdq6wwy" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-JAVA中EXCEL和WORD文件的导出的副本" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2022/04/28/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA%E7%9A%84%E5%89%AF%E6%9C%AC/" class="article-date">
@@ -101,7 +148,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2022/04/28/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA%E7%9A%84%E5%89%AF%E6%9C%AC/" data-id="cl2io4rfx00045cffhhrn929j" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2022/04/28/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA%E7%9A%84%E5%89%AF%E6%9C%AC/" data-id="clngwbrpm000u3mff3jsbap39" class="article-share-link">Share</a>
       
       
     </footer>
@@ -157,7 +204,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2022/02/16/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA/" data-id="cl2io4rfn00005cfffkae1xbw" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2022/02/16/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA/" data-id="clngwbrpc00083mff02cj9zyo" class="article-share-link">Share</a>
       
       
     </footer>
@@ -207,7 +254,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/10/30/%E5%85%B3%E4%BA%8E%E6%A0%91%E7%BB%93%E6%9E%84%E7%9A%84%E6%9E%84%E9%80%A0/" data-id="cl2io4rg0000d5cffgt6l14fj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/10/30/%E5%85%B3%E4%BA%8E%E6%A0%91%E7%BB%93%E6%9E%84%E7%9A%84%E6%9E%84%E9%80%A0/" data-id="clngwbrpd000b3mff3reg8rr6" class="article-share-link">Share</a>
       
       
     </footer>
@@ -260,7 +307,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-id="cl2io4rg2000h5cffff1ohgdg" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-id="clngwbrpj000n3mff2uq5hc9k" class="article-share-link">Share</a>
       
       
     </footer>
@@ -322,7 +369,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" data-id="cl2io4rfx00055cff7m9l24ay" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/" data-id="clngwbrp700023mff9h551m5j" class="article-share-link">Share</a>
       
       
     </footer>
@@ -366,7 +413,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="cl2io4rg0000b5cff9ixaba2r" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/31/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" data-id="clngwbrpi000k3mff258e8e8g" class="article-share-link">Share</a>
       
       
     </footer>
@@ -419,7 +466,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" data-id="cl2io4rfy00075cff8tx1bbij" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/07/03/VUE+springBoot%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" data-id="clngwbrph000i3mfffb449w3h" class="article-share-link">Share</a>
       
       
     </footer>
@@ -467,7 +514,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="cl2io4rft00015cfff98i83q5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/06/06/Mysql%E4%B8%8EOracle/" data-id="clngwbroy00003mff2qdo15wa" class="article-share-link">Share</a>
       
       
     </footer>
@@ -515,57 +562,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="cl2io4rg3000m5cff4omw9sha" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-递归中的优化-爬楼梯" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" class="article-date">
-  <time datetime="2021-04-04T11:55:57.000Z" itemprop="datePublished">2021-04-04</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/">爬楼梯</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>1、2、3、5、8、13、21、34</p>
-<p>今天刷leetcode的时候碰到了一个比较经典的问题，也就是爬楼梯。题目如下:<br>//假设你正在爬楼梯。需要 n 阶你才能到达楼顶。<br>//<br>// 每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？<br>//<br>// 注意：给定 n 是一个正整数。<br>//<br>// 示例 1：<br>//<br>// 输入： 2<br>//输出： 2<br>//解释： 有两种方法可以爬到楼顶。<br>//1.  1 阶 + 1 阶<br>//2.  2 阶<br>//<br>// 示例 2：<br>//<br>// 输入： 3<br>//输出： 3<br>//解释： 有三种方法可以爬到楼顶。<br>//1.  1 阶 + 1 阶 + 1 阶<br>//2.  1 阶 + 2 阶<br>//3.  2 阶 + 1 阶<br>第一反应就是递归，跟以前碰到的兔子问题一样。遂写出如下代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Solution &#123;</span><br><span class="line"> public static int climbStairs(int n) &#123;</span><br><span class="line">        if(n&#x3D;&#x3D;0)&#123;</span><br><span class="line">            return 0;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;1)&#123;</span><br><span class="line">            return 1;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;2)&#123;</span><br><span class="line">            return 2;</span><br><span class="line">        &#125;</span><br><span class="line">        for(int i&#x3D;3;i&lt;&#x3D;n;i++)&#123;</span><br><span class="line">            return climbStairs(n-1)+climbStairs(n-2);</span><br><span class="line">        &#125;</span><br><span class="line">        return 0;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>写完直接提交代码，提示<br>            运行失败:<br>            Time Limit Exceeded<br>            测试用例:45<br>            stdout:<br>从测试结果可以看出当需要爬45阶的楼梯时，就提示了超时。由此可见这种递归无法实现题目的要求。<br>随即我就想着能不能把递归给优化一下，脑海第一反应就是把每一次运算的结果放入map集合中，之后若需要该结果则直接从集合中取值。<br>例如 将我们在以10阶楼梯为条件去运行改代码，那么会计算9阶和8阶的结果，9阶会计算8阶和7阶，这样就会重复计算8阶的结果。我们就可以在第一次计算8阶结果的时候，把它存入Map集合中去。节省计算时间，实现如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">class Solution &#123;</span><br><span class="line">private static   Map&lt;Integer,Integer&gt; map&#x3D;new HashMap&lt;Integer, Integer&gt;();</span><br><span class="line"> public static int climbStairs(int n) &#123;</span><br><span class="line">        if(n&#x3D;&#x3D;0)&#123;</span><br><span class="line">            return 0;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;1)&#123;</span><br><span class="line">            return 1;</span><br><span class="line">        &#125;</span><br><span class="line">        if(n&#x3D;&#x3D;2)&#123;</span><br><span class="line">            return 2;</span><br><span class="line">        &#125;</span><br><span class="line">        int result&#x3D;0;</span><br><span class="line"></span><br><span class="line">        for(int i&#x3D;3;i&lt;&#x3D;n;i++)&#123;</span><br><span class="line">            int result1&#x3D;0;</span><br><span class="line">            int result2&#x3D;0;</span><br><span class="line">            if(map.containsKey(i-1))&#123;</span><br><span class="line">                result1&#x3D;map.get(i-1);</span><br><span class="line">            &#125;</span><br><span class="line">            if(map.containsKey(i-2))&#123;</span><br><span class="line">                result2&#x3D;map.get(i-2);</span><br><span class="line">            &#125;</span><br><span class="line">            if(!map.containsKey(i-1))&#123;</span><br><span class="line">                result1&#x3D;climbStairs(i-1);</span><br><span class="line">                map.put(i-1,result1);</span><br><span class="line">            &#125;</span><br><span class="line">            if(!map.containsKey(i-2))&#123;</span><br><span class="line">                result2&#x3D;climbStairs(i-2);</span><br><span class="line">                map.put(i-2,result2);</span><br><span class="line">            &#125;</span><br><span class="line">            result&#x3D;result1+result2;</span><br><span class="line">        &#125;</span><br><span class="line">        return result;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>写完之后测试一下是否节约时间</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">long begin&#x3D;new Date().getTime();</span><br><span class="line">System.out.println(climbStairs(40));</span><br><span class="line">long end&#x3D;new Date().getTime();</span><br><span class="line">System.out.println(&quot;用时&quot;+(end-begin)+&quot;毫秒&quot;);</span><br></pre></td></tr></table></figure>
-<p>用第一种递归输出如下:<br>165580141<br>用时811毫秒<br>使用优化之后的输出如下:<br>165580141<br>用时2毫秒<br>效果还是很不错的，直接提交代码，leetcode那边也显示通过了。<br>            解答成功:<br>            执行耗时:1 ms,击败了100.00% 的Java用户<br>            内存消耗:35.2 MB,击败了44.77% 的Java用户<br>提交之后又在网上继续看这方面的东西，看到了另一种优化方法，经测试所用时间远小于我上面的方法，在此也分享一下。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public static int climbStairs(int n) &#123;</span><br><span class="line">      if(n&#x3D;&#x3D;0)&#123;</span><br><span class="line">           return 0;</span><br><span class="line">       &#125;</span><br><span class="line">       if(n&#x3D;&#x3D;1)&#123;</span><br><span class="line">           return 1;</span><br><span class="line">       &#125;</span><br><span class="line">       if(n&#x3D;&#x3D;2)&#123;</span><br><span class="line">           return 2;</span><br><span class="line">       &#125;</span><br><span class="line">       int start&#x3D;1;</span><br><span class="line">       int end&#x3D;2;</span><br><span class="line">       int count&#x3D;0;</span><br><span class="line">       for(int i&#x3D;3;i&lt;&#x3D;n;i++)&#123;</span><br><span class="line">           int temp&#x3D;start;</span><br><span class="line">           count&#x3D;end+start;</span><br><span class="line">           start&#x3D;end;</span><br><span class="line">           end &#x3D;start+temp;</span><br><span class="line">       &#125;</span><br><span class="line">       return count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/04/04/%E9%80%92%E5%BD%92%E4%B8%AD%E7%9A%84%E4%BC%98%E5%8C%96-%E7%88%AC%E6%A5%BC%E6%A2%AF/" data-id="cl2io4rg3000k5cff82an18bk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/04/25/%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E7%9A%84%E5%9D%91/" data-id="clngwbrpk000p3mff5f7n40xf" class="article-share-link">Share</a>
       
       
     </footer>
@@ -618,6 +615,10 @@
       <ul>
         
           <li>
+            <a href="/2022/04/28/Mysql%E4%BD%BF%E7%94%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%95%88%E7%8E%87/">JAVA中$ref循环引用的问题</a>
+          </li>
+        
+          <li>
             <a href="/2022/04/28/JAVA%E4%B8%ADEXCEL%E5%92%8CWORD%E6%96%87%E4%BB%B6%E7%9A%84%E5%AF%BC%E5%87%BA%E7%9A%84%E5%89%AF%E6%9C%AC/">JAVA中$ref循环引用的问题</a>
           </li>
         
@@ -633,10 +634,6 @@
             <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E9%9C%80%E6%B1%82%E7%9A%84%E5%AE%9E%E7%8E%B0/">记一次需求的实现</a>
           </li>
         
-          <li>
-            <a href="/2021/08/13/JAVA8%E4%B8%AD%E7%9A%84%E6%B5%81/">JAVA8中流的几种常用方式</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -649,7 +646,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2022 shen<br>
+      &copy; 2023 shen<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
